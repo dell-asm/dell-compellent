@@ -31,14 +31,14 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
     if "#{@resource[:folder]}".size != 0
       Puppet.debug("Creating volume folder with name '#{@resource[:folder]}'")
-      volumeFolderCommand = "java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/volfoldercreate_#{@resource[:name]}_exitcode.xml -c \"volumefolder create -name '#{@resource[:folder]}'\""
+      volumeFolderCommand = "java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/volfoldercreate_#{@resource[:name]}_exitcode.xml -c \"volumefolder create -name '#{@resource[:folder]}'\""
       Puppet.debug(volumeFolderCommand)
       system (volumeFolderCommand)
     end
 
     Puppet.debug("Creating volume with name '#{@resource[:name]}'")
 
-    volumeCreateCommand = "java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/volcreate_#{@resource[:name]}_exitcode.xml -c \"#{volumeCLI}\""
+    volumeCreateCommand = "java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/volcreate_#{@resource[:name]}_exitcode.xml -c \"#{volumeCLI}\""
     Puppet.debug(volumeCreateCommand)
 
     response =  system (volumeCreateCommand)
@@ -48,7 +48,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
   def destroy
     Puppet.debug("Inside Destroy method")
     Puppet.debug("Destroying volume #{@resource[:name]}")
-    volumeDestroyCommand = "java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/voldeleteexitcode.xml -c \"volume delete -name #{@resource[:name]}\""
+    volumeDestroyCommand = "java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/voldeleteexitcode.xml -c \"volume delete -name #{@resource[:name]}\""
     system(volumeDestroyCommand)
   end
 

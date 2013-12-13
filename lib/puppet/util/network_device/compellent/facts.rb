@@ -88,10 +88,10 @@ def get_index_value(node)
   def retrieve
     Puppet.debug("In facts retrieve")
     Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user} Password is #{@transport.password}")
-    response = system("java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_systemExitCode.xml -c \"system show -xml /tmp/#{@transport.host}_systemResponse.xml\" ")
-    response = system("java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_controllerExitCode.xml -c \"controller show -xml /tmp/#{@transport.host}_controllerResponse.xml\" ")
-    response = system("java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_diskfolderExitCode.xml -c \"diskfolder show -xml /tmp/#{@transport.host}_diskfolderResponse.xml\" ")
- #  response = system("java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_alertExitCode.xml -c \"alert show -xml /tmp/#{@transport.host}_alertResponse.xml\" ")
+    response = system("java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_systemExitCode.xml -c \"system show -xml /tmp/#{@transport.host}_systemResponse.xml\" ")
+    response = system("java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_controllerExitCode.xml -c \"controller show -xml /tmp/#{@transport.host}_controllerResponse.xml\" ")
+    response = system("java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_diskfolderExitCode.xml -c \"diskfolder show -xml /tmp/#{@transport.host}_diskfolderResponse.xml\" ")
+ #  response = system("java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@transport.host} -user #{@transport.user} -password P@ssw0rd -xmloutputfile /tmp/#{@transport.host}_alertExitCode.xml -c \"alert show -xml /tmp/#{@transport.host}_alertResponse.xml\" ")
 
     resp1 = "/tmp/#{@transport.host}_systemExitCode.xml"
     resp2 = "/tmp/#{@transport.host}_systemResponse.xml"

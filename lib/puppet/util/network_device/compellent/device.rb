@@ -25,7 +25,7 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     @transport.user = @url.user
     @transport.password = @url.password
     Puppet.debug("host is #{@transport.host}")
-    response = system("java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host  #{@url.host} -user #{@url.user} -password P@ssw0rd -xmloutputfile /tmp/#{@url.host}_loginExitCode.xml -c \"system show -xml /tmp/#{@url.host}_loginResponse.xml\" ")
+    response = system("java -jar /etc/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host  #{@url.host} -user #{@url.user} -password P@ssw0rd -xmloutputfile /tmp/#{@url.host}_loginExitCode.xml -c \"system show -xml /tmp/#{@url.host}_loginResponse.xml\" ")
     Puppet.debug("the end")
   end
 		
