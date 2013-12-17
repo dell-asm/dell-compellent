@@ -22,9 +22,9 @@ class Puppet::Provider::Compellent < Puppet::Provider
     self.class.transport
   end
 
-  # Helper function for simplifying the execution of NetApp API commands, in a similar fashion to the commands function. 
+  # Helper function for simplifying the execution of Compellent API commands, in a similar fashion to the commands function. 
   # Arguments should be a hash of 'command name' => 'api command'.
-  def self.netapp_commands(command_specs)
+  def self.compellent_commands(command_specs)
     command_specs.each do |name, apicommand|
       # The `create_class_and_instance_method` method was added in puppet 3.0.0
       if respond_to? :create_class_and_instance_method
