@@ -36,6 +36,28 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     return command
   end
   
+  def getLogPath(num)
+    temp_path = Pathname.new(__FILE__).parent
+    Puppet.debug("Temp PATH - #{temp_path}")
+    $i = 0
+    $num = num
+    p = Pathname.new(temp_path)
+    while $i < $num  do
+      p = Pathname.new(temp_path)
+      temp_path = p.dirname
+      $i +=1
+    end
+    temp_path = temp_path.join('logs')
+    Puppet.debug("Log Path #{temp_path}")
+    return  temp_path
+  end
+  
+  def getUniqueRefId()
+    randNo = Random.rand(100000)
+    pid = Process.pid
+    return "#{randNo}_PID_#{pid}"
+  end
+  
   def get_path(num)
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
@@ -52,7 +74,6 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     return  temp_path
   end
 
-
   def create
     puts "Inside Create Method."
     server_name = @resource[:name]
@@ -64,13 +85,14 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Creating server with name '#{server_name}'")
 
     libpath = get_path(2)
-    servercreatecommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/servercreate_#{server_name}_exitcode.xml -c \"#{servercli}\""
+	serverCreateExitCodeXML = "#{getLogPath(2)}/serverCreateExitCode_#{getUniqueRefId}.xml"
+	
+    servercreatecommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverCreateExitCodeXML} -c \"#{servercli}\""
     Puppet.debug(servercreatecommand)
     response =  system (servercreatecommand)
 
     parserobj=ResponseParser.new('_')
-    file_path = "/tmp/servercreate_#{server_name}_exitcode.xml"   
-    parserobj.parse_exitcode(file_path)
+    parserobj.parse_exitcode(serverCreateExitCodeXML)
     hash= parserobj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Server #{server_name} created successful..")
@@ -87,12 +109,12 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Destroying server #{server_name}")
 
     libpath = get_path(2)
-    serverdestroycommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/serverdelete_#{server_name}_exitcode.xml -c \"server delete -name #{server_name}\""
+	serverDestroyExitCodeXML = "#{getLogPath(2)}/serverDestroyExitCode_#{getUniqueRefId}.xml"
+    serverdestroycommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverDestroyExitCodeXML} -c \"server delete -name #{server_name}\""
     system(serverdestroycommand)
 
     parserobj=ResponseParser.new('_')
-    file_path = "/tmp/serverdelete_#{server_name}_exitcode.xml"
-    parserobj.parse_exitcode(file_path)
+    parserobj.parse_exitcode(serverDestroyExitCodeXML)
     hash= parserobj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Server #{server_name} deleted successful..")
@@ -108,12 +130,13 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug(" resource[:ensure]  ==  #{@resource[:ensure]}")
 	libpath = get_path(2)
 	serverShowCLI = showserver_commandline
-	serverShowCommand = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/servershow_#{@resource[:name]}_exitcode.xml -c \"#{serverShowCLI} -xml /tmp/servershow_#{@resource[:name]}_response.xml\""
+	serverShowExitCodeXML = "#{getLogPath(2)}/serverShowExitCode_#{getUniqueRefId}.xml"
+	serverShowResponseXML = "#{getLogPath(2)}/serverShowResponse_#{getUniqueRefId}.xml"
+	serverShowCommand = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverShowExitCodeXML} -c \"#{serverShowCLI} -xml #{serverShowResponseXML}\""
     system(serverShowCommand)
-    file_path1 = "/tmp/servershow_#{@resource[:name]}_exitcode.xml"
-    file_path2 = "/tmp/servershow_#{@resource[:name]}_response.xml"
+    
     parserObj=ResponseParser.new('_')
-    parserObj.parse_discovery(file_path1,file_path2,0)
+    parserObj.parse_discovery(serverShowExitCodeXML,serverShowResponseXML,0)
     hash= parserObj.return_response
     serverName = "#{hash['server_Name']}"
     Puppet.debug("Server Name - #{serverName}")

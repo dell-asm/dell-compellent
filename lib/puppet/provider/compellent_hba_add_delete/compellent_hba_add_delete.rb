@@ -34,6 +34,28 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     return command
   end
   
+  def getLogPath(num)
+    temp_path = Pathname.new(__FILE__).parent
+    Puppet.debug("Temp PATH - #{temp_path}")
+    $i = 0
+    $num = num
+    p = Pathname.new(temp_path)
+    while $i < $num  do
+      p = Pathname.new(temp_path)
+      temp_path = p.dirname
+      $i +=1
+    end
+    temp_path = temp_path.join('logs')
+    Puppet.debug("Log Path #{temp_path}")
+    return  temp_path
+  end
+  
+  def getUniqueRefId()
+    randNo = Random.rand(100000)
+    pid = Process.pid
+    return "#{randNo}_PID_#{pid}"
+  end
+  
   def get_path(num)
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
@@ -55,13 +77,13 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     add_hba_cli = add_serverhbacommandline
     resourcename = @resource[:name]
     libpath = get_path(2)	
-    add_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/addserverhba_#{resourcename}_exitcode.xml -c \"#{add_hba_cli}\""
+	add_server_hba_ExitCodeXML = "#{getLogPath(2)}/addserverhbaExitCode_#{getUniqueRefId}.xml"
+    add_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{add_server_hba_ExitCodeXML} -c \"#{add_hba_cli}\""
     Puppet.debug(add_server_hba_command)
     response =  system (add_server_hba_command)
 
     parser_obj=ResponseParser.new('_')
-    file_path = "/tmp/addserverhba_#{resourcename}_exitcode.xml"
-    parser_obj.parse_exitcode(file_path)
+    parser_obj.parse_exitcode(add_server_hba_ExitCodeXML)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Server HBA added successfully..")
@@ -77,13 +99,13 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     delete_hba_cli = remove_serverhbacommandline
     resourcename = @resource[:name]	
 	libpath = get_path(2)
-    remove_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/removeserverhba_#{resourcename}_exitcode.xml -c \"#{delete_hba_cli}\""
+	remove_server_hba_ExitCodeXML = "#{getLogPath(2)}/removeserverhbaExitCode_#{getUniqueRefId}.xml"
+    remove_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{remove_server_hba_ExitCodeXML} -c \"#{delete_hba_cli}\""
     Puppet.debug(remove_server_hba_command)    
     system(remove_server_hba_command)
 
     parser_obj=ResponseParser.new('_')
-    file_path = "/tmp/removeserverhba_#{resourcename}_exitcode.xml"
-    parser_obj.parse_exitcode(file_path)
+    parser_obj.parse_exitcode(remove_server_hba_ExitCodeXML)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Server HBA removed successfully..")
@@ -101,11 +123,13 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     Puppet.debug("ensure = #{@resource[:ensure]}")
     libpath = get_path(2)
     show_hba_cli = show_serverhbacommandline
-    show_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/showhserverhba_#{@resource[:name]}_exitcode.xml -c \"#{show_hba_cli} -xml /tmp/showhserverhba_#{@resource[:name]}_response.xml\""
+	server_hba_show_exitcode_xml = "#{getLogPath(2)}/serverHbaShowExitCode_#{getUniqueRefId}.xml"
+	server_hba_show_response_xml = "#{getLogPath(2)}/serverHbaShowResponse_#{getUniqueRefId}.xml"
+	
+    show_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{server_hba_show_exitcode_xml} -c \"#{show_hba_cli} -xml #{server_hba_show_response_xml}\""
     system(show_server_hba_command)    
-    server_file_name_path = "/tmp/showhserverhba_#{@resource[:name]}_response.xml"
     parser_obj=ResponseParser.new('_')
-    hash = parser_obj.retrieve_server_properties(server_file_name_path)
+    hash = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
     wwn_list = "#{hash['WWN_List']}"
     Puppet.debug("WWN list - #{wwn_list}")
 

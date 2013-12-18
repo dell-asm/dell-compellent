@@ -23,13 +23,38 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     return command
   end
 
+  def getLogPath(num)
+    temp_path = Pathname.new(__FILE__).parent
+    Puppet.debug("Temp PATH - #{temp_path}")
+    $i = 0
+    $num = num
+    p = Pathname.new(temp_path)
+    while $i < $num  do
+      p = Pathname.new(temp_path)
+      temp_path = p.dirname
+      $i +=1
+    end
+    temp_path = temp_path.join('logs')
+    Puppet.debug("Log Path #{temp_path}")
+    return  temp_path
+  end
+  
+  def getUniqueRefId()
+    randNo = Random.rand(100000)
+    pid = Process.pid
+    return "#{randNo}_PID_#{pid}"
+  end
+  
   def get_deviceid
     Puppet.debug("Fetching information about the Volume")
     resourcename = @resource[:name]
-    Puppet.debug("executing show volume command ###########################")
+    Puppet.debug("executing show volume command")
 
     vol_show_cli = showvolume_commandline
-    volume_show_command = "java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/volshow_#{resourcename}_exitcode.xml -c \"#{vol_show_cli} -xml /tmp/volshow_#{resourcename}_response.xml\""
+	volumeShowExitCodeXML = "#{getLogPath(2)}/volumeShowExitCode_#{getUniqueRefId}.xml"
+	volumeShowResponseXML = "#{getLogPath(2)}/volumeShowResponse_#{getUniqueRefId}.xml"
+		
+    volume_show_command = "java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{volumeShowExitCodeXML} -c \"#{vol_show_cli} -xml #{volumeShowResponseXML}\""
     system(volume_show_command)
     Puppet.debug("in method get_deviceid, after exectuing show volume command")
  
@@ -110,7 +135,9 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     map_volume_cli = map_volume_commandline
     Puppet.debug("Map Volume CLI - #{map_volume_cli}")
     Puppet.debug("Map volume with name '#{resourcename}'")
-    map_volume_create_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/mapvolume_#{resourcename}_exitcode.xml -c \"#{map_volume_cli}\""
+	mapVolumeExitCodeXML = "#{getLogPath(2)}/mapVolumeExitCode_#{getUniqueRefId}.xml"
+		
+    map_volume_create_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{mapVolumeExitCodeXML} -c \"#{map_volume_cli}\""
     Puppet.debug(map_volume_create_command)
 
     response =  system (map_volume_create_command)
@@ -135,7 +162,8 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     Puppet.debug("Device Id for Volume - #{device_id}")    
     if  #{device_id} != "" 
         Puppet.debug("Invoking destroy command")
-        unmap_volume_destroy_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/unmapvolume_#{resourcename}_exitcode.xml -c \"volume unmap -deviceid #{device_id}\""
+		unmapVolumeExitCodeXML = "#{getLogPath(2)}/unmapVolumeExitCode_#{getUniqueRefId}.xml"
+        unmap_volume_destroy_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{unmapVolumeExitCodeXML} -c \"volume unmap -deviceid #{device_id}\""
         Puppet.debug(unmap_volume_destroy_command)
         system(unmap_volume_destroy_command)
 
@@ -157,11 +185,14 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     libpath = get_path(2)
     resourcename = @resource[:name]
     show_server_cli = showserver_commandline
-    show_server_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile /tmp/showserver_#{resourcename}_exitcode.xml -c \"#{show_server_cli} -xml /tmp/showserver_#{resourcename}_response.xml\""
+	
+	serverShowExitCodeXML = "#{getLogPath(2)}/serverShowExitCode_#{getUniqueRefId}.xml"
+	serverShowResponseXML = "#{getLogPath(2)}/serverShowResponse_#{getUniqueRefId}.xml"
+	
+    show_server_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverShowExitCodeXML} -c \"#{show_server_cli} -xml #{serverShowResponseXML}\""
     system(show_server_command)
-    file_path = "/tmp/showserver_#{resourcename}_response.xml"
     parser_obj=ResponseParser.new('_')
-    hash = parser_obj.retrieve_server_properties(file_path)
+    hash = parser_obj.retrieve_server_properties(serverShowResponseXML)
     volume_name = "#{hash['Volume']}"
  
     if volume_name.include? resourcename
