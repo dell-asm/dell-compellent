@@ -75,12 +75,12 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     Puppet.debug("In facts retrieve")
     Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user} Password is #{@transport.password}")
 
-    systemRespXML = "#{getLogPath(2)}/systemResp_#{getUniqueRefId}.xml"
-    systemExitCodeXML = "#{getLogPath(2)}/systemExitCode_#{getUniqueRefId}.xml"
-    ctrlRespXML = "#{getLogPath(2)}/ctrlResp_#{getUniqueRefId}.xml"
-    ctrlExitCodeXML = "#{getLogPath(2)}/ctrlExitCode_#{getUniqueRefId}.xml"
-    diskfolderRespXML = "#{getLogPath(2)}/diskfolderResp_#{getUniqueRefId}.xml"
-    diskfolderExitCodeXML = "#{getLogPath(2)}/diskfolderExitCode_#{getUniqueRefId}.xml"
+    systemRespXML = "#{getLogPath(3)}/systemResp_#{getUniqueRefId}.xml"
+    systemExitCodeXML = "#{getLogPath(3)}/systemExitCode_#{getUniqueRefId}.xml"
+    ctrlRespXML = "#{getLogPath(3)}/ctrlResp_#{getUniqueRefId}.xml"
+    ctrlExitCodeXML = "#{getLogPath(3)}/ctrlExitCode_#{getUniqueRefId}.xml"
+    diskfolderRespXML = "#{getLogPath(3)}/diskfolderResp_#{getUniqueRefId}.xml"
+    diskfolderExitCodeXML = "#{getLogPath(3)}/diskfolderExitCode_#{getUniqueRefId}.xml"
     
     response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{systemExitCodeXML} -c \"system show -xml #{systemRespXML}\" ")
     response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{ctrlExitCodeXML} -c \"controller show -xml #{ctrlRespXML}\" ")
