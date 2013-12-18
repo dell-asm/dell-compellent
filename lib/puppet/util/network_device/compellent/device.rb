@@ -10,7 +10,7 @@ require 'puppet/lib/ResponseParser'
 class Puppet::Util::NetworkDevice::Compellent::Device
 
   attr_accessor :url, :transport
-  def initialize(url)
+  def initialize(url, option = {})
     Puppet.debug("Device login started")
     @url = URI.parse(url)
     redacted_url = @url.dup
