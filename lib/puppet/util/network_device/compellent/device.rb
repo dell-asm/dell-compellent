@@ -1,3 +1,5 @@
+# Class - Making connection with device
+
 require 'puppet/util/network_device'
 require 'puppet/util/network_device/compellent/facts'
 require 'puppet/util/network_device/transport_compellent'
@@ -8,7 +10,7 @@ require 'puppet/lib/ResponseParser'
 class Puppet::Util::NetworkDevice::Compellent::Device
 
   attr_accessor :url, :transport
-  def initialize(url, option = {})
+  def initialize(url)
     Puppet.debug("Device login started")
     @url = URI.parse(url)
     redacted_url = @url.dup
@@ -25,13 +27,13 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     Puppet.debug("host is #{@transport.host}")
     libpath = get_path(3)
 
-    loginRespXML = "#{getLogPath(3)}/loginResp_#{getUniqueRefId}.xml"
-    loginExitCodeXML = "#{getLogPath(3)}/loginExitCode_#{getUniqueRefId}.xml"
+    login_respxml = "#{get_log_path(3)}/loginResp_#{get_unique_refid}.xml"
+    login_exitcodexml = "#{get_log_path(3)}/loginExitCode_#{get_unique_refid}.xml"
     
-    response = system("java -jar #{libpath} -host  #{@url.host} -user #{@url.user} -password #{@url.password} -xmloutputfile #{loginExitCodeXML} -c \"system show -xml #{loginRespXML}\" ")
-    parserObj=ResponseParser.new('_')
-    parserObj.parse_exitcode(loginExitCodeXML)
-    hash= parserObj.return_response
+    response = system("java -jar #{libpath} -host  #{@url.host} -user #{@url.user} -password #{@url.password} -xmloutputfile #{login_exitcodexml} -c \"system show -xml #{login_respxml}\" ")
+    parser_obj=ResponseParser.new('_')
+    parser_obj.parse_exitcode(login_exitcodexml)
+    hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Login successful..")
     else
@@ -39,15 +41,15 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     end
   end
 
-   def getLogPath(num)
+   def get_log_path(num)
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('logs')
@@ -55,10 +57,10 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     return  temp_path
   end
 
-   def getUniqueRefId()
-    randNo = Random.rand(100000)
+   def get_unique_refid()
+    randno = Random.rand(100000)
     pid = Process.pid
-    return "#{randNo}_PID_#{pid}"
+    return "#{randno}_PID_#{pid}"
   end
 
   def get_path(num)
@@ -66,10 +68,10 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('lib/CompCU-6.3.jar')

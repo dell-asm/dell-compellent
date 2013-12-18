@@ -1,3 +1,5 @@
+# Class for making connection with device
+
 require 'puppet/provider'
 require 'puppet/util/network_device/compellent/device'
 

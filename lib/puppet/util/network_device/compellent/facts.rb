@@ -16,10 +16,10 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     @transport = transport
   end
 
-   def getUniqueRefId()
-    randNo = Random.rand(100000)
+   def get_unique_refid()
+    randno = Random.rand(100000)
     pid = Process.pid
-    return "#{randNo}_PID_#{pid}"
+    return "#{randno}_PID_#{pid}"
   end
 
   def get_path(num)
@@ -27,10 +27,10 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('lib/CompCU-6.3.jar')
@@ -38,15 +38,15 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     return  temp_path
   end
 
-  def getLogPath(num)
+  def get_log_path(num)
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('logs')
@@ -59,10 +59,10 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     Puppet.debug("Temp PATH #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('lib/CompCU-6.3.jar')
@@ -75,23 +75,23 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     Puppet.debug("In facts retrieve")
     Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user} Password is #{@transport.password}")
 
-    systemRespXML = "#{getLogPath(3)}/systemResp_#{getUniqueRefId}.xml"
-    systemExitCodeXML = "#{getLogPath(3)}/systemExitCode_#{getUniqueRefId}.xml"
-    ctrlRespXML = "#{getLogPath(3)}/ctrlResp_#{getUniqueRefId}.xml"
-    ctrlExitCodeXML = "#{getLogPath(3)}/ctrlExitCode_#{getUniqueRefId}.xml"
-    diskfolderRespXML = "#{getLogPath(3)}/diskfolderResp_#{getUniqueRefId}.xml"
-    diskfolderExitCodeXML = "#{getLogPath(3)}/diskfolderExitCode_#{getUniqueRefId}.xml"
+    system_respxml = "#{get_log_path(3)}/systemResp_#{get_unique_refid}.xml"
+    system_exitcodexml = "#{get_log_path(3)}/systemExitCode_#{get_unique_refid}.xml"
+    ctrl_respxml = "#{get_log_path(3)}/ctrlResp_#{get_unique_refid}.xml"
+    ctrl_exitcodexml = "#{get_log_path(3)}/ctrlExitCode_#{get_unique_refid}.xml"
+    diskfolder_respxml = "#{get_log_path(3)}/diskfolderResp_#{get_unique_refid}.xml"
+    diskfolder_exitcodexml = "#{get_log_path(3)}/diskfolderExitCode_#{get_unique_refid}.xml"
     
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{systemExitCodeXML} -c \"system show -xml #{systemRespXML}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{ctrlExitCodeXML} -c \"controller show -xml #{ctrlRespXML}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{diskfolderExitCodeXML} -c \"diskfolder show -xml #{diskfolderRespXML}\" ")
+    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{system_exitcodexml} -c \"system show -xml #{system_respxml}\" ")
+    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{ctrl_exitcodexml} -c \"controller show -xml #{ctrl_respxml}\" ")
+    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{diskfolder_exitcodexml} -c \"diskfolder show -xml #{diskfolder_respxml}\" ")
 
     Puppet.debug("Creating Parser Object")
-    parserObj=ResponseParser.new('_')
-    parserObj.parse_discovery(systemExitCodeXML,systemRespXML,0)
-    parserObj.parse_discovery(ctrlExitCodeXML,ctrlRespXML,1)
-    parserObj.parse_diskfolder_xml(diskfolderExitCodeXML,diskfolderRespXML)
-    @facts =  parserObj.return_response
+    parser_obj=ResponseParser.new('_')
+    parser_obj.parse_discovery(system_exitcodexml,system_respxml,0)
+    parser_obj.parse_discovery(ctrl_exitcodexml,ctrl_respxml,1)
+    parser_obj.parse_diskfolder_xml(diskfolder_exitcodexml,diskfolder_respxml)
+    @facts =  parser_obj.return_response
   end
 
 end

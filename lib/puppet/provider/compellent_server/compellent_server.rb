@@ -36,15 +36,15 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     return command
   end
   
-  def getLogPath(num)
+  def get_log_path(num)
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('logs')
@@ -52,10 +52,10 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     return  temp_path
   end
   
-  def getUniqueRefId()
-    randNo = Random.rand(100000)
+  def get_unique_refid()
+    randno = Random.rand(100000)
     pid = Process.pid
-    return "#{randNo}_PID_#{pid}"
+    return "#{randno}_PID_#{pid}"
   end
   
   def get_path(num)
@@ -63,10 +63,10 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('lib/CompCU-6.3.jar')
@@ -85,15 +85,15 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Creating server with name '#{server_name}'")
 
     libpath = get_path(2)
-	serverCreateExitCodeXML = "#{getLogPath(2)}/serverCreateExitCode_#{getUniqueRefId}.xml"
+    servercreate_exitcodexml = "#{get_log_path(2)}/serverCreateExitCode_#{get_unique_refid}.xml"
 	
-    servercreatecommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverCreateExitCodeXML} -c \"#{servercli}\""
+    servercreatecommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{servercreate_exitcodexml} -c \"#{servercli}\""
     Puppet.debug(servercreatecommand)
     response =  system (servercreatecommand)
 
-    parserobj=ResponseParser.new('_')
-    parserobj.parse_exitcode(serverCreateExitCodeXML)
-    hash= parserobj.return_response
+    parser_obj=ResponseParser.new('_')
+    parser_obj.parse_exitcode(servercreate_exitcodexml)
+    hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Server #{server_name} created successful..")
       else
@@ -109,13 +109,13 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Destroying server #{server_name}")
 
     libpath = get_path(2)
-	serverDestroyExitCodeXML = "#{getLogPath(2)}/serverDestroyExitCode_#{getUniqueRefId}.xml"
-    serverdestroycommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverDestroyExitCodeXML} -c \"server delete -name #{server_name}\""
+    serverdestroy_exitcodexml = "#{get_log_path(2)}/serverDestroyExitCode_#{get_unique_refid}.xml"
+    serverdestroycommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverdestroy_exitcodexml} -c \"server delete -name #{server_name}\""
     system(serverdestroycommand)
 
-    parserobj=ResponseParser.new('_')
-    parserobj.parse_exitcode(serverDestroyExitCodeXML)
-    hash= parserobj.return_response
+    parser_obj=ResponseParser.new('_')
+    parser_obj.parse_exitcode(serverdestroy_exitcodexml)
+    hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Server #{server_name} deleted successful..")
       else
@@ -129,17 +129,17 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Puppet::Provider::Compellenet_server: checking existance of compellent server #{@resource[:name]}")
     Puppet.debug(" resource[:ensure]  ==  #{@resource[:ensure]}")
 	libpath = get_path(2)
-	serverShowCLI = showserver_commandline
-	serverShowExitCodeXML = "#{getLogPath(2)}/serverShowExitCode_#{getUniqueRefId}.xml"
-	serverShowResponseXML = "#{getLogPath(2)}/serverShowResponse_#{getUniqueRefId}.xml"
-	serverShowCommand = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverShowExitCodeXML} -c \"#{serverShowCLI} -xml #{serverShowResponseXML}\""
-    system(serverShowCommand)
+	servershowcli = showserver_commandline
+	servershow_exitcodexml = "#{get_log_path(2)}/serverShowExitCode_#{get_unique_refid}.xml"
+	servershow_responsexml = "#{get_log_path(2)}/serverShowResponse_#{get_unique_refid}.xml"
+	servershow_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{servershow_exitcodexml} -c \"#{servershowcli} -xml #{servershow_responsexml}\""
+        system(servershow_command)
     
-    parserObj=ResponseParser.new('_')
-    parserObj.parse_discovery(serverShowExitCodeXML,serverShowResponseXML,0)
-    hash= parserObj.return_response
-    serverName = "#{hash['server_Name']}"
-    Puppet.debug("Server Name - #{serverName}")
+    parser_obj=ResponseParser.new('_')
+    parser_obj.parse_discovery(servershow_exitcodexml,servershow_responsexml,0)
+    hash= parser_obj.return_response
+    servername = "#{hash['server_Name']}"
+    Puppet.debug("Server Name - #{servername}")
 		
     ##if("#{@resource[:ensure]}" == "absent")
     ##  @property_hash[:ensure] = :present
@@ -149,7 +149,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Value = #{@property_hash[:ensure]}")
     #@property_hash[:ensure] == :present
 	
-      if  "#{serverName}" == ""
+      if  "#{servername}" == ""
       Puppet.info("Puppet::Server does not exist")
       false
     else

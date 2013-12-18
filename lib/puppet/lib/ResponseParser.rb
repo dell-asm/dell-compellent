@@ -1,3 +1,5 @@
+# Utility Class - parsing XML
+
 require 'rexml/document'
 
 include REXML

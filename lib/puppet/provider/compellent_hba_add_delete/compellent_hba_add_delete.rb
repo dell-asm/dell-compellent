@@ -34,15 +34,15 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     return command
   end
   
-  def getLogPath(num)
+  def get_logpath(num)
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('logs')
@@ -50,10 +50,10 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     return  temp_path
   end
   
-  def getUniqueRefId()
-    randNo = Random.rand(100000)
+  def get_unique_refid()
+    randno = Random.rand(100000)
     pid = Process.pid
-    return "#{randNo}_PID_#{pid}"
+    return "#{randno}_PID_#{pid}"
   end
   
   def get_path(num)
@@ -61,10 +61,10 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
     $num = num
-    p = Pathname.new(temp_path)
+    path = Pathname.new(temp_path)
     while $i < $num  do
-      p = Pathname.new(temp_path)
-      temp_path = p.dirname
+      path = Pathname.new(temp_path)
+      temp_path = path.dirname
       $i +=1
     end
     temp_path = temp_path.join('lib/CompCU-6.3.jar')
@@ -77,13 +77,13 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     add_hba_cli = add_serverhbacommandline
     resourcename = @resource[:name]
     libpath = get_path(2)	
-	add_server_hba_ExitCodeXML = "#{getLogPath(2)}/addserverhbaExitCode_#{getUniqueRefId}.xml"
-    add_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{add_server_hba_ExitCodeXML} -c \"#{add_hba_cli}\""
+    add_server_hba_exitcodexml = "#{get_logpath(2)}/addserverhbaExitCode_#{get_unique_refid}.xml"
+    add_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{add_server_hba_exitcodexml} -c \"#{add_hba_cli}\""
     Puppet.debug(add_server_hba_command)
     response =  system (add_server_hba_command)
 
     parser_obj=ResponseParser.new('_')
-    parser_obj.parse_exitcode(add_server_hba_ExitCodeXML)
+    parser_obj.parse_exitcode(add_server_hba_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Server HBA added successfully..")
@@ -98,14 +98,14 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     Puppet.debug("Inside Remove Server HBA Method.")
     delete_hba_cli = remove_serverhbacommandline
     resourcename = @resource[:name]	
-	libpath = get_path(2)
-	remove_server_hba_ExitCodeXML = "#{getLogPath(2)}/removeserverhbaExitCode_#{getUniqueRefId}.xml"
-    remove_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{remove_server_hba_ExitCodeXML} -c \"#{delete_hba_cli}\""
+    libpath = get_path(2)
+    remove_server_hba_exitcodexml = "#{get_logpath(2)}/removeserverhbaExitCode_#{get_unique_refid}.xml"
+    remove_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{remove_server_hba_exitcodexml} -c \"#{delete_hba_cli}\""
     Puppet.debug(remove_server_hba_command)    
     system(remove_server_hba_command)
 
     parser_obj=ResponseParser.new('_')
-    parser_obj.parse_exitcode(remove_server_hba_ExitCodeXML)
+    parser_obj.parse_exitcode(remove_server_hba_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Server HBA removed successfully..")
@@ -123,8 +123,8 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     Puppet.debug("ensure = #{@resource[:ensure]}")
     libpath = get_path(2)
     show_hba_cli = show_serverhbacommandline
-	server_hba_show_exitcode_xml = "#{getLogPath(2)}/serverHbaShowExitCode_#{getUniqueRefId}.xml"
-	server_hba_show_response_xml = "#{getLogPath(2)}/serverHbaShowResponse_#{getUniqueRefId}.xml"
+	server_hba_show_exitcode_xml = "#{get_logpath(2)}/serverHbaShowExitCode_#{get_unique_refid}.xml"
+	server_hba_show_response_xml = "#{get_logpath(2)}/serverHbaShowResponse_#{get_unique_refid}.xml"
 	
     show_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{server_hba_show_exitcode_xml} -c \"#{show_hba_cli} -xml #{server_hba_show_response_xml}\""
     system(show_server_hba_command)    
