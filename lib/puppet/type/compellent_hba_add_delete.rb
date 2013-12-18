@@ -23,6 +23,9 @@ Puppet::Type.newtype(:compellent_hba_add_delete) do
       end
     end
   end
+   newparam(:serverfolder) do
+    desc "The server folder."
+  end
   
   newparam(:porttype) do
     desc "The porttype is iSCSI or FiberChannel. Valid characters are a-z."   

@@ -23,10 +23,13 @@ Puppet::Type.newtype(:compellent_map_volume) do
     defaultto :false
   end
 
-  newparam(:folder) do
-    desc "The folder this volume should be created in."
+  newparam(:volumefolder) do
+    desc "The volume folder name."
   end
 
+  newparam(:serverfolder) do
+    desc "The server folder name."
+  end
   
   newparam(:force, :boolean => true) do
     desc "The aggregate this volume should be created in." 

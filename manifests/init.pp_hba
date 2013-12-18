@@ -18,6 +18,7 @@ class compellent{
   user              => 'Admin',
   password          => 'P@ssw0rd',
   host              => '172.17.10.40',
+  serverfolder 		=> '',
   porttype 		=> 'FiberChannel',  
   wwn		=> '21000024FF4ABF6C',
   manual  		=> true,

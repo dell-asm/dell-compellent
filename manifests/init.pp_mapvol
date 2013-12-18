@@ -14,18 +14,19 @@
 
 class compellent{
  compellent::volume_map_unmap { 'Test_Volume_Test':
-  user                          => 'Admin',
-  password                      => 'P@ssw0rd',
-  host                          => '172.17.10.40',
-  ensure        	        => 'absent',
+  user              => 'Admin',
+  password          => 'P@ssw0rd',
+  host              => '172.17.10.40',
+  ensure        	=> 'present',
   boot				=> true,  
-  folder                        => 'abc',
-  servername 			=> 'Test_Server',
-  lun 	                        => '',
-  localport	                => '',
+  volumefolder                  => 'abc',
+  serverfolder                  => '',
+  servername 		=> 'Test_Server',
+  lun 	            => '',
+  localport	        => '',
   force 			=>  true,
-  singlepath 	                =>  true,
-  readonly	                =>  true,
+  singlepath 	    =>  true,
+  readonly	        =>  true,
     }
 }
 

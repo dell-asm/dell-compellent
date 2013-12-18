@@ -5,19 +5,19 @@ define compellent::server_create_destroy (
   $wwn,
   $operatingsystem      = 'Windows 2012',
   $ensure        	= 'present',
-  $serverfolder         = 'serverFolder',
-  $notes 		= 'Test Server',
+  $serverfolder         = '',
+  $notes 		= '',
   
 ) {
   compellent_server { "${name}":
   ensure       	 	 => $ensure,
   operatingsystem	 => $operatingsystem,
-  serverfolder         	 => $serverfolder,
-  notes			 => $notes,   
-  wwn			 => $wwn,
-  user			 => $user,
-  password 		 => $password,
-  host			 => $host,
+  serverfolder       => $serverfolder,
+  notes			     => $notes,   
+  wwn			     => $wwn,
+  user			     => $user,
+  password 		     => $password,
+  host			     => $host,
   }
 }
 

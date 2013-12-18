@@ -4,8 +4,14 @@ require 'puppet/lib/ResponseParser'
 Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Server HBA creation, modification and deletion."
   
+  attr_accessor :hash_map
+  @hash_map
+  
   def add_serverhbacommandline
-    command = "server addhba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"
+    #command = "server addhba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"
+	Puppet.debug("################# #{self.hash_map}")
+	server_index = self.hash_map['server_Index']
+    command = "server addhba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"
 
    porttype_value = @resource[:porttype]
 
@@ -21,16 +27,19 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
   end
   
   def remove_serverhbacommandline  
-    command = "server removehba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"	
+    #command = "server removehba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"	
+	Puppet.debug("################# #{self.hash_map}")
+	server_index = self.hash_map['server_Index']
+	command = "server removehba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"	
     return command
 
   end
   
   def show_serverhbacommandline  
     command = "server show -name '#{@resource[:name]}'"
-    #if "#{@resource[:folder]}".size != 0
-    #  command = command + " -folder '#{@resource[:folder]}'"
-    #end
+    if "#{@resource[:serverfolder]}".size != 0
+      command = command + " -folder '#{@resource[:serverfolder]}'"
+    end
     return command
   end
   
@@ -129,11 +138,24 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     show_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{server_hba_show_exitcode_xml} -c \"#{show_hba_cli} -xml #{server_hba_show_response_xml}\""
     system(show_server_hba_command)    
     parser_obj=ResponseParser.new('_')
-    hash = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
-    wwn_list = "#{hash['WWN_List']}"
+	folder_value = @resource[:serverfolder] 
+	if folder_value.length  > 0
+	     if("#{@resource[:ensure]}" == "absent")
+		    self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
+		    wwn_list = self.hash_map['WWN_List']
+	     else
+                   parser_obj.parse_discovery(server_hba_show_exitcode_xml,server_hba_show_response_xml,0)
+		   self.hash_map = parser_obj.return_response
+                   wwn_list = self.hash_map['server_WWN_List']
+	     end
+	    Puppet.debug("folder is not null ::::: #{self.hash_map}")
+	else
+	    self.hash_map = parser_obj.retrieve_empty_folder_server_properties(server_hba_show_response_xml,@resource[:name])
+	    Puppet.debug("folder is null ::::: #{self.hash_map}")
+	end
     Puppet.debug("WWN list - #{wwn_list}")
-
-    if  wwn_list.include? @resource[:wwn]
+	Puppet.debug(@resource[:wwn])
+    if  ((wwn_list != nil) && (wwn_list.include? @resource[:wwn]))
       Puppet.debug("Puppet::WWN exist")
       true
    else

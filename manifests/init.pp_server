@@ -16,11 +16,11 @@ class compellent{
   operatingsystem	=> 'Windows 2012',
   ensure        	=> 'present',
   serverfolder 		=> '',
-  notes	                => '',
-  wwn 			=> '21000024FF44486F',
-  user 			=> 'Admin',
-  password 		=> 'P@ssw0rd',
-  host 			=> '172.17.10.40'
+  notes	            => '',
+  wwn 			    => '21000024FF44486F',
+  user 			    => 'Admin',
+  password 		    => 'P@ssw0rd',
+  host 			    => '172.17.10.40'
     }
 }
 

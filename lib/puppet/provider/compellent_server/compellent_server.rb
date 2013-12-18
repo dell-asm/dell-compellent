@@ -3,6 +3,8 @@ require 'puppet/lib/ResponseParser'
 
 Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Server creation and deletion."
+ attr_accessor :hash_map
+  @hash_map
   def create_servercommandline
     command = "server create -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"
 	
@@ -78,16 +80,40 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     puts "Inside Create Method."
     server_name = @resource[:name]
     Puppet.debug("Resource name #{server_name}")
+	folder_value = @resource[:serverfolder]	
     servercli = create_servercommandline
+   libpath = get_path(2)
+  host_value = @resource[:host]
+  password_value = @resource[:password]
+ user_value = @resource[:user]
     puts "Server CLI"
     puts servercli
     
     Puppet.debug("Creating server with name '#{server_name}'")
-
-    libpath = get_path(2)
+	if "#{folder_value}".size != 0
+		Puppet.debug("Creating server folder with name '#{folder_value}'")
+		serverFolderExitCodeXML = "#{getLogPath(2)}/serverFolderCreateExitCode_#{getUniqueRefId}.xml"
+		server_folder_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{serverFolderExitCodeXML} -c \"serverfolder create -name '#{folder_value}'\""
+		Puppet.debug(server_folder_command)
+        system (server_folder_command)
+		parser_obj=ResponseParser.new('_')
+        parser_obj.parse_exitcode(serverFolderExitCodeXML)
+        hash= parser_obj.return_response
+		if "#{hash['Success']}".to_str() == "TRUE"
+			Puppet.debug("Server Folder Created successfully..")
+        else
+			b = "#{hash['Error']}".to_str()
+			if b.include? "already exists"
+				Puppet.debug("Server Folder already exists")
+			else
+				raise Puppet::Error, "#{hash['Error']}"
+			end
+		end
+	end
+	
     servercreate_exitcodexml = "#{get_log_path(2)}/serverCreateExitCode_#{get_unique_refid}.xml"
 	
-    servercreatecommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{servercreate_exitcodexml} -c \"#{servercli}\""
+    servercreatecommand = "java -jar -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{servercreate_exitcodexml} -c \"#{servercli}\""
     Puppet.debug(servercreatecommand)
     response =  system (servercreatecommand)
 
@@ -110,7 +136,9 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 
     libpath = get_path(2)
     serverdestroy_exitcodexml = "#{get_log_path(2)}/serverDestroyExitCode_#{get_unique_refid}.xml"
-    serverdestroycommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverdestroy_exitcodexml} -c \"server delete -name #{server_name}\""
+    server_index = self.hash_map['server_Index']
+    Puppet.debug("server_index : #{server_index}")
+    serverdestroycommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverdestroy_exitcodexml} -c \"server delete -index #{server_index}\""
     system(serverdestroycommand)
 
     parser_obj=ResponseParser.new('_')
@@ -133,28 +161,29 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 	servershow_exitcodexml = "#{get_log_path(2)}/serverShowExitCode_#{get_unique_refid}.xml"
 	servershow_responsexml = "#{get_log_path(2)}/serverShowResponse_#{get_unique_refid}.xml"
 	servershow_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{servershow_exitcodexml} -c \"#{servershowcli} -xml #{servershow_responsexml}\""
-        system(servershow_command)
+    system(servershow_command)
     
     parser_obj=ResponseParser.new('_')
-    parser_obj.parse_discovery(servershow_exitcodexml,servershow_responsexml,0)
-    hash= parser_obj.return_response
-    servername = "#{hash['server_Name']}"
-    Puppet.debug("Server Name - #{servername}")
+    folder_value = @resource[:serverfolder] 
+    if folder_value.length  > 0
+		parser_obj.parse_discovery(serverShowExitCodeXML,serverShowResponseXML,0)
+        self.hash_map = parser_obj.return_response
+        Puppet.debug("folder is not null ::::: #{self.hash_map}")
+    else
+		self.hash_map = parser_obj.retrieve_empty_folder_server_properties(serverShowResponseXML,@resource[:name])
+		Puppet.debug("folder is null ::::: #{self.hash_map}")
+    end    
+
+    server_index = self.hash_map['server_Index']     	
 		
-    ##if("#{@resource[:ensure]}" == "absent")
-    ##  @property_hash[:ensure] = :present
-    ##else
-    ##  @property_hash[:ensure] = :absent
-    ##end
     Puppet.debug("Value = #{@property_hash[:ensure]}")
-    #@property_hash[:ensure] == :present
-	
-      if  "#{servername}" == ""
-      Puppet.info("Puppet::Server does not exist")
-      false
+    if  "#{server_index}" == ""
+		Puppet.info("Puppet::Server does not exist")
+		false
     else
       #Server exist, can delete!
       #@property_hash[:ensure] = :absent
+      Puppet.info("Puppet::Server exist")
       true
     end
 	
