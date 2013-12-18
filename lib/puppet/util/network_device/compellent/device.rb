@@ -3,9 +3,6 @@ require 'puppet/util/network_device/compellent/facts'
 require 'puppet/util/network_device/transport_compellent'
 require 'uri'
 require 'net/https'
-
-#require_relative 'ResponseParser'
-#require 'puppet/util/network_device/ResponseParser'
 require 'puppet/lib/ResponseParser'
 
 class Puppet::Util::NetworkDevice::Compellent::Device
@@ -27,16 +24,41 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     @transport.password = @url.password
     Puppet.debug("host is #{@transport.host}")
     libpath = get_path(3)
-    response = system("java -jar #{libpath} -host  #{@url.host} -user #{@url.user} -password #{@url.password} -xmloutputfile /tmp/#{@url.host}_loginExitCode.xml -c \"system show -xml /tmp/#{@url.host}_loginResponse.xml\" ")
+
+    loginRespXML = "#{getLogPath(3)}/loginResp_#{getUniqueRefId}.xml"
+    loginExitCodeXML = "#{getLogPath(3)}/loginExitCode_#{getUniqueRefId}.xml"
+    
+    response = system("java -jar #{libpath} -host  #{@url.host} -user #{@url.user} -password #{@url.password} -xmloutputfile #{loginExitCodeXML} -c \"system show -xml #{loginRespXML}\" ")
     parserObj=ResponseParser.new('_')
-    file_path = "/tmp/#{@transport.host}_loginExitCode.xml"
-    parserObj.parse_exitcode(file_path)
+    parserObj.parse_exitcode(loginExitCodeXML)
     hash= parserObj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Login successful..")
     else
       raise Puppet::Error, "#{hash['Error']}"
     end
+  end
+
+   def getLogPath(num)
+    temp_path = Pathname.new(__FILE__).parent
+    Puppet.debug("Temp PATH - #{temp_path}")
+    $i = 0
+    $num = num
+    p = Pathname.new(temp_path)
+    while $i < $num  do
+      p = Pathname.new(temp_path)
+      temp_path = p.dirname
+      $i +=1
+    end
+    temp_path = temp_path.join('logs')
+    Puppet.debug("Log Path #{temp_path}")
+    return  temp_path
+  end
+
+   def getUniqueRefId()
+    randNo = Random.rand(100000)
+    pid = Process.pid
+    return "#{randNo}_PID_#{pid}"
   end
 
   def get_path(num)
