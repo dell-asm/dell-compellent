@@ -8,11 +8,6 @@ Puppet::Type.newtype(:compellent_hba_add_delete) do
   newparam(:name) do
     desc "The server name. Valid characters are a-z, 1-9 & underscore."
     isnamevar
-    validate do |value|
-      unless value =~ /^\w+$/
-        raise ArgumentError, "%s is not a valid server name." % value
-      end
-    end
   end
   
   newparam(:wwn) do

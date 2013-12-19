@@ -8,11 +8,6 @@ Puppet::Type.newtype(:compellent_map_volume) do
   newparam(:name) do
     desc "The volume name needs to be map with server. Valid characters are a-z, 1-9 & underscore."
     isnamevar
-    validate do |value|
-      unless value =~ /^\w+$/
-        raise ArgumentError, "%s is not a valid volume name." % value
-      end
-    end
   end
   
   
@@ -54,11 +49,6 @@ Puppet::Type.newtype(:compellent_map_volume) do
   
   newparam(:servername) do
     desc "The server name needs to be map with volume"
-    validate do |value|
-      unless value =~ /^\w+$/
-        raise ArgumentError, "%s is not a valid volume name." % value
-      end
-    end
   end
 
   newparam(:lun) do

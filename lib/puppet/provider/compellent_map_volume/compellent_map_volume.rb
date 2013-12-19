@@ -50,6 +50,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
   
   def get_deviceid
     Puppet.debug("Fetching information about the Volume")
+	libpath = get_path(2)
     resourcename = @resource[:name]
     Puppet.debug("executing show volume command")
 
@@ -57,7 +58,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     volumeshow_exitcodexml = "#{get_log_path(2)}/volumeShowExitCode_#{get_unique_refid}.xml"
     volumeshow_responsexml = "#{get_log_path(2)}/volumeShowResponse_#{get_unique_refid}.xml"
 		
-    volume_show_command = "java -jar /etc/puppetlabs/puppet/modules/compellent/lib/puppet/util/network_device/compellent/CompCU-6.3.jar -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{volumeshow_exitcodexml} -c \"#{vol_show_cli} -xml #{volumeshow_responsexml}\""
+    volume_show_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{volumeshow_exitcodexml} -c \"#{vol_show_cli} -xml #{volumeshow_responsexml}\""
     system(volume_show_command)
     Puppet.debug("in method get_deviceid, after exectuing show volume command")
  
@@ -65,21 +66,26 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:volumefolder]
 	if folder_value.length  > 0
-		parser_obj.parse_discovery(volumeShowExitCodeXML,volumeShowResponseXML,0)
+		parser_obj.parse_discovery(volumeshow_exitcodexml,volumeshow_responsexml,0)
 		hash= parser_obj.return_response 
 	else
-		hash = parser_obj.retrieve_empty_folder_volume_properties(volumeShowResponseXML,@resource[:name])
+		hash = parser_obj.retrieve_empty_folder_volume_properties(volumeshow_responsexml,@resource[:name])
 	end
-    device_id = "#{hash['volume_DeviceID']}"
+	device_id = "#{hash['volume_DeviceID']}"
 
     return device_id
   end
 
   def map_volume_commandline
-    #command = "volume map -server '#{@resource[:servername]}'"
+    command = "volume map -server '#{@resource[:servername]}'"
 	Puppet.debug("################# #{self.hash_map}")
-	server_index = self.hash_map['server_Index']
-	command = "volume map -serverindex '#{server_index}'"
+	folder_value = @resource[:serverfolder]
+	if folder_value.length > 0
+		server_index = self.hash_map['server_Index']
+	else 
+		server_index = self.hash_map['Index'][0]
+	end
+	#command = "volume map -index '#{server_index}'"
     device_id = get_deviceid
     Puppet.debug("Device Id for Volume - #{device_id}")
     
@@ -152,10 +158,10 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     response =  system (map_volume_create_command)
 
     parser_obj=ResponseParser.new('_')
-    parser_obj.parse_exitcode(map_volume_exitcodexml)
+    parser_obj.parse_exitcode(mapvolume_exitcodexml)
     hash= parser_obj.return_response
      if "#{hash['Success']}".to_str() == "TRUE" 
-        Puppet.debug("Map Volume command exectued successfully..")
+        Puppet.debug("Volume mapped executed successfully with server.")
      else
         raise Puppet::Error, "#{hash['Error']}"
      end
@@ -179,7 +185,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
         parser_obj.parse_exitcode(unmapvolume_exitcodexml)
         hash= parser_obj.return_response
         if "#{hash['Success']}".to_str() == "TRUE" 
-           Puppet.debug("UnMap Volume command exectued successfully..")
+           Puppet.debug("Volume unmapped successfully.")
         else
            raise Puppet::Error, "#{hash['Error']}"
         end
@@ -215,15 +221,17 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     else
 		self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,@resource[:servername])
 		Puppet.debug("folder is null ::::: #{self.hash_map}")
+                volume_name = "#{self.hash_map['Volume']}" 
+		volume_id = self.hash_map['DeviceId']
     end  
 	
     Puppet.debug(" volume_name : #{volume_name}") 
-    
-    if ((volume_name != nil) && (volume_name.include? resourcename))
-        Puppet.debug("Puppet::Volume name exist")
+    device_id = get_deviceid    
+     if ((volume_id != nil) && (volume_id.include? device_id))		
+        Puppet.debug("Volume exist")
         true
     else
-      Puppet.debug("Puppet::Volume name does not exist")
+      Puppet.debug("Volume name does not exist")
       false
     end
 

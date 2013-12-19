@@ -9,7 +9,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     command = command + " -boot"
     end
 
-    folder_value = @resource[:folder]
+    folder_value = @resource[:volumefolder]
     if "#{folder_value}".size != 0
       command = command + " -folder '#{folder_value}'"
     end
@@ -33,7 +33,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
   def showvolume_commandline
     command = "volume show -name '#{@resource[:name]}'"
-    folder_value = #{@resource[:folder]}
+    folder_value = @resource[:volumefolder]
     if "#{folder_value}".size != 0
       command = command + " -folder '#{folder_value}'"
     end
@@ -68,8 +68,14 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     system(volume_show_command)
     Puppet.debug("in method get_deviceid, after exectuing show volume command")
     parser_obj=ResponseParser.new('_')
-    parser_obj.parse_discovery(volshow_exitcodexml, volshow_respxml,0)
-    hash= parser_obj.return_response
+    folder_value = @resource[:volumefolder]
+    if folder_value.length  > 0
+	parser_obj.parse_discovery(volshow_exitcodexml,volshow_respxml,0)
+	hash= parser_obj.return_response 
+    else
+	hash = parser_obj.retrieve_empty_folder_volume_properties(volshow_respxml,@resource[:name])
+    end
+       device_id = "#{hash['volume_DeviceID']}"
     device_id = "#{hash['volume_DeviceID']}"
     return device_id
   end
@@ -100,7 +106,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
     Puppet.debug("Inside Create Method.")
     libpath = get_path(2)
-    folder_value = @resource[:folder]
+    folder_value = @resource[:volumefolder]
     host_value = @resource[:host]
     user_value = @resource[:user]
     password_value = @resource[:password]
@@ -118,11 +124,11 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
       parser_obj.parse_exitcode(volfolder_exitcodexml)
       hash= parser_obj.return_response
       if "#{hash['Success']}".to_str() == "TRUE"
-        Puppet.debug("Created Folder successfully..")
+        Puppet.debug("Volume folder created successfully.")
       else
         existresult = "#{hash['Error']}".to_str()
         if existresult.include? "already exists"
-          Puppet.debug("Folder already exists")
+          Puppet.debug("Volume folder already exists.")
         else
           raise Puppet::Error, "#{hash['Error']}"
         end
@@ -139,7 +145,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     parser_obj.parse_exitcode(volcreate_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.debug("Volume created successfully..")
+      Puppet.debug("Volume created successfully.")
     else
       raise Puppet::Error, "#{hash['Error']}"
     end

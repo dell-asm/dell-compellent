@@ -109,15 +109,26 @@ class ResponseParser
   #    key_name
   #  end
 
+  def trim_spaces(element_array)
+  index=0
+   while index<element_array.size do
+   element_array[index]=element_array[index].strip
+   index+=1
+   end
+   element_array
+end
+
   def retrieve_server_properties(server_file_name)
        server_file = File.new(server_file_name)
        result_doc = Document.new(server_file)
        prop_map=Hash.new
        result= XPath.first(result_doc, "//server/Name")
        prop_map[result.name]=result.text
+       result= XPath.first(result_doc, "//server/Index")
+       prop_map[result.name]=result.text
        result= XPath.first(result_doc, "//server/WWN_List")
-       module_path_list=result.text.split(':')
-       prop_map[result.name]=module_path_list
+       module_path_list=result.text.split(',')
+       prop_map[result.name]=trim_spaces(module_path_list)
        volume_list=Array.new
        index=0
        result= XPath.each(result_doc, "//server/Mappings/mapping/Volume") do |volume|
@@ -167,13 +178,13 @@ class ResponseParser
 			XPath.each(result_doc, "//volume/Mappings/Mappings") do |mapping_element|
 			read_element(mapping_element,prop_map,index)
 			index+=1
-		end
-	result= true
-	break
-	end
-	end
-	end
-	prop_map
+			end
+			result= true
+			break
+	       end
+	     end
+	   end
+	   prop_map
 	end
   
 
@@ -190,30 +201,44 @@ class ResponseParser
 	end
 	end
 
-       def retrieve_empty_folder_server_properties(server_file_name, server_name)
-        prop_map=Hash.new
-        server_file = File.new(server_file_name)
-        result_doc = Document.new(server_file)
-        result=false
-        XPath.each(result_doc, "//server") do |server_element|
-        if server_element.elements["Name"].text.eql?"#{server_name}"
-                if server_element.elements["Folder"].text.nil?
-                        read_element(server_element,prop_map,nil)
-                        index=0
-                        XPath.each(result_doc, "//server/Mappings/Mappings") do |mapping_element|
-                        read_element(mapping_element,prop_map,index)
-                        index+=1
-                end
+  def retrieve_empty_folder_server_properties(server_file_name, server_name)
+  prop_map=Hash.new
+  server_file = File.new(server_file_name)
+  result_doc = Document.new(server_file)
+  #puts  result_doc.content.to_json
+  result=false
+  XPath.each(result_doc, "//server") do |volume_element|
+    if volume_element.elements["Name"].text.eql?"#{server_name}"
+      if volume_element.elements["Folder"].text.nil?
+        read_server_element(volume_element,prop_map)
+        deviceId_list=Array.new
+        index=0
+        XPath.each(result_doc, "//server/Mappings/mapping/DeviceID") do |deviceId_element|
+          deviceId_list[index]=deviceId_element.text
+          index+=1
+        end
+        prop_map['DeviceId']=deviceId_list
         result= true
         break
-        end
-        end
-        end
-        prop_map
-        end
+      end
+    end
+  end
+  prop_map
+end
+def read_server_element(xml_element,prop_map)
+  xml_element.each_element do |child|
+    if not(child.has_elements?)
+      value=child.text
+      if not(value.nil?)
+        value_list=value.split(',')
+        prop_map["#{child.name()}"]=trim_spaces(value_list)
+      end
+    end
+  end
 end
 
 
 
 
 
+end

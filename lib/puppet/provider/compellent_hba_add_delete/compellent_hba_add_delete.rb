@@ -9,9 +9,16 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
   
   def add_serverhbacommandline
     #command = "server addhba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"
-	Puppet.debug("################# #{self.hash_map}")
-	server_index = self.hash_map['server_Index']
-    command = "server addhba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"
+	Puppet.debug("In method add hba in server, hash_map: #{self.hash_map}")
+        folder_value = @resource[:serverfolder]
+	Puppet.debug(folder_value)
+	if folder_value.length > 0
+	    server_index = self.hash_map['server_Index']
+	    command = "server addhba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"
+	else 
+	   server_index = self.hash_map['Index'][0]
+	   command = "server addhba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"
+	end
 
    porttype_value = @resource[:porttype]
 
@@ -28,8 +35,13 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
   
   def remove_serverhbacommandline  
     #command = "server removehba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"	
-	Puppet.debug("################# #{self.hash_map}")
-	server_index = self.hash_map['server_Index']
+	Puppet.debug("In method remove hba, hash_map : #{self.hash_map}")
+	folder_value = @resource[:serverfolder]
+	if folder_value.length > 0
+		server_index = self.hash_map['Index']
+	else
+		server_index = self.hash_map['Index'][0]
+	end
 	command = "server removehba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"	
     return command
 
@@ -95,9 +107,9 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     parser_obj.parse_exitcode(add_server_hba_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.debug("Server HBA added successfully..")
+      Puppet.debug("HBA added successfully in server.")
       else
-      Puppet.debug("Failed to add HBA in Server..")
+      Puppet.debug("Failed to add HBA in server.")
       raise Puppet::Error, "#{hash['Error']}"
     end
     
@@ -117,9 +129,9 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     parser_obj.parse_exitcode(remove_server_hba_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.debug("Server HBA removed successfully..")
+      Puppet.debug("HBA removed successfully from server.")
       else
-      Puppet.debug("Failed to remove HBA from Server..")
+      Puppet.debug("Failed to remove HBA from server.")
       raise Puppet::Error, "#{hash['Error']}"
     end
 
@@ -148,18 +160,19 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
 		   self.hash_map = parser_obj.return_response
                    wwn_list = self.hash_map['server_WWN_List']
 	     end
-	    Puppet.debug("folder is not null ::::: #{self.hash_map}")
+	    Puppet.debug("folder is not null : #{self.hash_map}")
 	else
 	    self.hash_map = parser_obj.retrieve_empty_folder_server_properties(server_hba_show_response_xml,@resource[:name])
-	    Puppet.debug("folder is null ::::: #{self.hash_map}")
+	    Puppet.debug("folder is null : #{self.hash_map}")
+	    wwn_list = self.hash_map['WWN_List']
 	end
     Puppet.debug("WWN list - #{wwn_list}")
 	Puppet.debug(@resource[:wwn])
-    if  ((wwn_list != nil) && (wwn_list.include? @resource[:wwn]))
-      Puppet.debug("Puppet::WWN exist")
+    if ((wwn_list != nil) && (wwn_list.include? @resource[:wwn]))
+      Puppet.debug("HBA exist in server.")
       true
    else
-      Puppet.debug("Puppet::WWN does not exist")  
+      Puppet.debug("HBA does not exist in server.")  
       false
     end
 	end
