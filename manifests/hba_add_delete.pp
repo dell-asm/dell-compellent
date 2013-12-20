@@ -53,7 +53,7 @@ define compellent::hba_add_delete (
   manual		     => $manual,
   user			     => $user,
   password 		     => $password,
-  serverfolder   => $serverfolder,
+  serverfolder       => $serverfolder,
   host			     => $host,
   }
 }

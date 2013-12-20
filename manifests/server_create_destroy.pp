@@ -2,11 +2,11 @@ define compellent::server_create_destroy (
   $user, 
   $password,
   $host,
-  $wwn,
+  $wwn                  = '21000024FF44486F',
   $operatingsystem      = 'Windows 2012',
-  $ensure        	= 'present',
+  $ensure        	    = 'present',
   $serverfolder         = '',
-  $notes 		= '',
+  $notes 		        = 'Test Server',
   
 ) {
   compellent_server { "${name}":
