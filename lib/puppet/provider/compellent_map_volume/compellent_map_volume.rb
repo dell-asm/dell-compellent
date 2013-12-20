@@ -78,7 +78,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
 
   def map_volume_commandline
     command = "volume map -server '#{@resource[:servername]}'"
-	Puppet.debug("################# #{self.hash_map}")
+	Puppet.debug("hash_map : #{self.hash_map}")
 	folder_value = @resource[:serverfolder]
 	if folder_value.length > 0
 		server_index = self.hash_map['server_Index']
@@ -147,6 +147,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     Puppet.debug("Inside create method.")
     libpath = get_path(2)
     resourcename = @resource[:name]
+	servername = @resource[:servername]
     map_volume_cli = map_volume_commandline
     Puppet.debug("Map Volume CLI - #{map_volume_cli}")
     Puppet.debug("Map volume with name '#{resourcename}'")
@@ -161,7 +162,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     parser_obj.parse_exitcode(mapvolume_exitcodexml)
     hash= parser_obj.return_response
      if "#{hash['Success']}".to_str() == "TRUE" 
-        Puppet.debug("Volume mapped executed successfully with server.")
+        Puppet.info("Successfully mapped volume '#{resourcename}' with the server '#{servername}'.")
      else
         raise Puppet::Error, "#{hash['Error']}"
      end
@@ -185,7 +186,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
         parser_obj.parse_exitcode(unmapvolume_exitcodexml)
         hash= parser_obj.return_response
         if "#{hash['Success']}".to_str() == "TRUE" 
-           Puppet.debug("Volume unmapped successfully.")
+           Puppet.info("Successfully unmapped volume '#{resourcename}' with the server.")
         else
            raise Puppet::Error, "#{hash['Error']}"
         end
@@ -197,6 +198,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     
     libpath = get_path(2)
     resourcename = @resource[:name]
+	servername = @resource[:servername]
     show_server_cli = showserver_commandline
     servershow_exitcodexml = "#{get_log_path(2)}/serverShowExitCode_#{get_unique_refid}.xml"
     servershow_responsexml = "#{get_log_path(2)}/serverShowResponse_#{get_unique_refid}.xml"
@@ -217,10 +219,10 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
 		    self.hash_map = parser_obj.return_response	
 	 	    volume_name = self.hash_map['server_Volume']
 	    end
-	    Puppet.debug("folder is not null ::::: #{self.hash_map}")
+	    Puppet.debug("folder is not null, hash_map - #{self.hash_map}")
     else
-		self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,@resource[:servername])
-		Puppet.debug("folder is null ::::: #{self.hash_map}")
+		self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,servername)
+		Puppet.debug("folder is null, hash_map - #{self.hash_map}")
                 volume_name = "#{self.hash_map['Volume']}" 
 		volume_id = self.hash_map['DeviceId']
     end  
@@ -228,10 +230,10 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     Puppet.debug(" volume_name : #{volume_name}") 
     device_id = get_deviceid    
      if ((volume_id != nil) && (volume_id.include? device_id))		
-        Puppet.debug("Volume exist")
+        Puppet.debug("Volume '#{resourcename}' mapped with server '#{servername}'")
         true
     else
-      Puppet.debug("Volume name does not exist")
+      Puppet.debug("Volume '#{resourcename}' does not mapped with server '#{servername}'")
       false
     end
 

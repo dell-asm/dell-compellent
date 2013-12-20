@@ -100,11 +100,11 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
         parser_obj.parse_exitcode(server_folder_exitcodexml)
         hash= parser_obj.return_response
 		if "#{hash['Success']}".to_str() == "TRUE"
-			Puppet.debug("Server Folder Created successfully.")
+			Puppet.info("Successfully created the server folder '#{folder_value}'.")
         else
 			b = "#{hash['Error']}".to_str()
 			if b.include? "already exists"
-				Puppet.debug("Server Folder already exists")
+				Puppet.info("Server folder '#{folder_value}' already exists")
 			else
 				raise Puppet::Error, "#{hash['Error']}"
 			end
@@ -121,9 +121,9 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     parser_obj.parse_exitcode(servercreate_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.info("Server #{server_name} created successful.")
+      Puppet.info("Successfully created the server '#{server_name}'")
       else
-      Puppet.info("Failed to create Server #{server_name}")
+      Puppet.info("Unable to create the server '#{server_name}'.")
       raise Puppet::Error, "#{hash['Error']}"
     end
 
@@ -150,9 +150,9 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     parser_obj.parse_exitcode(serverdestroy_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.info("Server #{server_name} deleted successful.")
+      Puppet.info("Successfully deleted the server '#{server_name}'.")
       else
-      Puppet.info("Failed to delete Server #{server_name}.")
+      Puppet.info("Unable to delete the server '#{server_name}'.")
       raise Puppet::Error, "#{hash['Error']}"
     end
 
@@ -174,11 +174,11 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     if folder_value.length  > 0
 		parser_obj.parse_discovery(servershow_exitcodexml,servershow_responsexml,0)
 	        self.hash_map = parser_obj.return_response
-	        Puppet.debug("folder is not null ::::: #{self.hash_map}")
+	        Puppet.debug("folder is not null, hash_map : #{self.hash_map}")
 		server_index = self.hash_map['server_Index']
     else
 		self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,@resource[:name])
-		Puppet.debug("folder is null ::::: #{self.hash_map}")
+		Puppet.debug("folder is null, hash_map : #{self.hash_map}")
 		if self.hash_map['Index'] != nil
 		        server_index = self.hash_map['Index'][0]
 		end

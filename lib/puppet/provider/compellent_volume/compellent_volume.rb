@@ -124,11 +124,11 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
       parser_obj.parse_exitcode(volfolder_exitcodexml)
       hash= parser_obj.return_response
       if "#{hash['Success']}".to_str() == "TRUE"
-        Puppet.debug("Volume folder created successfully.")
+        Puppet.info("Successfully created the volume folder '#{folder_value}'.")
       else
         existresult = "#{hash['Error']}".to_str()
         if existresult.include? "already exists"
-          Puppet.debug("Volume folder already exists.")
+          Puppet.info("Volume folder '#{folder_value}' already exists.")
         else
           raise Puppet::Error, "#{hash['Error']}"
         end
@@ -145,7 +145,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     parser_obj.parse_exitcode(volcreate_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.debug("Volume created successfully.")
+      Puppet.info("Successfully created the volume '#{resourcename}'.")
     else
       raise Puppet::Error, "#{hash['Error']}"
     end
@@ -174,13 +174,14 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
   def exists?
     device_id = get_deviceid
+	resourcename = @resource[:name]
     Puppet.debug("Device Id for Volume - #{device_id}")
 
     if  "#{device_id}" == ""
-      Puppet.debug("Puppet::Volume does not exist")
+      Puppet.debug("Puppet::Volume '#{resourcename}' does not exist")
       false
     else
-      Puppet.debug("Puppet::Volume exist")
+      Puppet.debug("Puppet::Volume '#{resourcename}' exist")
       true
     end
   end

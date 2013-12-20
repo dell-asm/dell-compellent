@@ -107,9 +107,9 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     parser_obj.parse_exitcode(add_server_hba_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.debug("HBA added successfully in server.")
+      Puppet.info("Successfully added HBA to the server '#{resourcename}'.")
       else
-      Puppet.debug("Failed to add HBA in server.")
+      Puppet.info("Unable to add the HBA in the server '#{resourcename}'.")
       raise Puppet::Error, "#{hash['Error']}"
     end
     
@@ -129,9 +129,9 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     parser_obj.parse_exitcode(remove_server_hba_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.debug("HBA removed successfully from server.")
+      Puppet.info("Successfully deleted the HBA from the server '#{resourcename}'.")
       else
-      Puppet.debug("Failed to remove HBA from server.")
+      Puppet.info("Unable to remove the HBA from the server '#{resourcename}'.")
       raise Puppet::Error, "#{hash['Error']}"
     end
 
@@ -140,7 +140,8 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
   end
 
   def exists?
-    Puppet.debug("Puppet::Provider::in checking for existence for resource  #{@resource[:name]}.")
+    resourcename = @resource[:name]	
+    Puppet.debug("Puppet::Provider::in checking for existence for resource  #{resourcename}.")
     Puppet.debug("ensure = #{@resource[:ensure]}")
     libpath = get_path(2)
     show_hba_cli = show_serverhbacommandline
@@ -162,17 +163,17 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
 	     end
 	    Puppet.debug("folder is not null : #{self.hash_map}")
 	else
-	    self.hash_map = parser_obj.retrieve_empty_folder_server_properties(server_hba_show_response_xml,@resource[:name])
+	    self.hash_map = parser_obj.retrieve_empty_folder_server_properties(server_hba_show_response_xml,resourcename)
 	    Puppet.debug("folder is null : #{self.hash_map}")
 	    wwn_list = self.hash_map['WWN_List']
 	end
     Puppet.debug("WWN list - #{wwn_list}")
 	Puppet.debug(@resource[:wwn])
     if ((wwn_list != nil) && (wwn_list.include? @resource[:wwn]))
-      Puppet.debug("HBA exist in server.")
+      Puppet.debug("An HBA exist in server #{resourcename}.")
       true
    else
-      Puppet.debug("HBA does not exist in server.")  
+      Puppet.debug("An HBA does not exist in server #{resourcename}.")  
       false
     end
 	end
