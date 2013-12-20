@@ -86,8 +86,8 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
    Refer to the examples in the manifest directory.
    The following files capture the details of the sample init.pp and the supported files:
 
-    - init.pp_server
-    - server_create_destroy.pp
+    - sample_init.pp_server
+    - sample_server_create_destroy.pp
    
    A user can create an init.pp file based on the above sample files, and call the "puppet device" command , for example: 
    # puppet device
