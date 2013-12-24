@@ -2,13 +2,7 @@
 
 module CommonLib
 
-  def CommonLib.temp_path
-	Puppet.debug("in method temp_path in file CommonLib #############################################################")
-  end
-
-
   def CommonLib.get_log_path(num)
-     Puppet.debug("In method get_log_path in file CommonLib @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")	
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0
@@ -26,14 +20,12 @@ module CommonLib
 	
 
   def CommonLib.get_unique_refid()
-	Puppet.debug("In method get_unique_refid in file CommonLib @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    randno = Random.rand(100000)
+	randno = Random.rand(100000)
     pid = Process.pid
     return "#{randno}_PID_#{pid}"
   end
 
  def CommonLib.get_path(num)
- Puppet.debug("In method get_path  in file CommonLib @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     temp_path = Pathname.new(__FILE__).parent
     Puppet.debug("Temp PATH - #{temp_path}")
     $i = 0

@@ -19,11 +19,11 @@ Puppet::Type.newtype(:compellent_hba_add_delete) do
     end
   end
    newparam(:serverfolder) do
-    desc "The server folder."
+    desc "The server folder name, optional parameter"
   end
   
   newparam(:porttype) do
-    desc "The porttype is iSCSI or FiberChannel. Valid characters are a-z."   
+    desc "The porttype. Valid values are iSCSI or FiberChannel."   
   end
   
   newparam(:manual, :boolean => true) do
@@ -35,16 +35,16 @@ Puppet::Type.newtype(:compellent_hba_add_delete) do
  
   
   newparam(:user) do
-    desc "The space reservation mode."
+    desc "User for compellent."
     
   end
   
   newparam(:password) do
-    desc "The space reservation mode."
+    desc "Password for compellent."
   end
   
   newparam(:host) do
-    desc "The space reservation mode."
+    desc "IP-address for compellent."
   end 
   
     

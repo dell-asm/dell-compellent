@@ -34,14 +34,14 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     ctrl_exitcodexml = "#{CommonLib.get_log_path(1)}/ctrlExitCode_#{CommonLib.get_unique_refid}.xml"
     diskfolder_respxml = "#{CommonLib.get_log_path(1)}/diskfolderResp_#{CommonLib.get_unique_refid}.xml"
     diskfolder_exitcodexml = "#{CommonLib.get_log_path(1)}/diskfolderExitCode_#{CommonLib.get_unique_refid}.xml"
-    volume_respxml = "#{get_log_path(3)}/volumeResp_#{get_unique_refid}.xml"
-    volume_exitcodexml = "#{get_log_path(3)}/volumeExitCode_#{get_unique_refid}.xml"
-    server_respxml = "#{get_log_path(3)}/serverResp_#{get_unique_refid}.xml"
-    server_exitcodexml = "#{get_log_path(3)}/serverExitCode_#{get_unique_refid}.xml"
-    replayprofile_respxml = "#{get_log_path(3)}/replayprofileResp_#{get_unique_refid}.xml"
-    replayprofile_exitcodexml = "#{get_log_path(3)}/replayprofileExitCode_#{get_unique_refid}.xml"
-    storageprofile_respxml = "#{get_log_path(3)}/storageprofileResp_#{get_unique_refid}.xml"
-    storageprofile_exitcodexml = "#{get_log_path(3)}/storageprofileExitCode_#{get_unique_refid}.xml"
+    volume_respxml = "#{CommonLib.get_log_path(1)}/volumeResp_#{CommonLib.get_unique_refid}.xml"
+    volume_exitcodexml = "#{CommonLib.get_log_path(1)}/volumeExitCode_#{CommonLib.get_unique_refid}.xml"
+    server_respxml = "#{CommonLib.get_log_path(1)}/serverResp_#{CommonLib.get_unique_refid}.xml"
+    server_exitcodexml = "#{CommonLib.get_log_path(1)}/serverExitCode_#{CommonLib.get_unique_refid}.xml"
+    replayprofile_respxml = "#{CommonLib.get_log_path(1)}/replayprofileResp_#{CommonLib.get_unique_refid}.xml"
+    replayprofile_exitcodexml = "#{CommonLib.get_log_path(1)}/replayprofileExitCode_#{CommonLib.get_unique_refid}.xml"
+    storageprofile_respxml = "#{CommonLib.get_log_path(1)}/storageprofileResp_#{CommonLib.get_unique_refid}.xml"
+    storageprofile_exitcodexml = "#{CommonLib.get_log_path(1)}/storageprofileExitCode_#{CommonLib.get_unique_refid}.xml"
     
     
     response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{system_exitcodexml} -c \"system show -xml #{system_respxml}\" ")

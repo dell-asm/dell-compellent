@@ -19,11 +19,11 @@ Puppet::Type.newtype(:compellent_map_volume) do
   end
 
   newparam(:volumefolder) do
-    desc "The volume folder name."
+    desc "The vlolume folder name, optional parameter."
   end
 
   newparam(:serverfolder) do
-    desc "The server folder name."
+    desc "The server folder name, optional parameter."
   end
   
   newparam(:force, :boolean => true) do
@@ -52,23 +52,23 @@ Puppet::Type.newtype(:compellent_map_volume) do
   end
 
   newparam(:lun) do
-    desc "The space reservation mode."
+    desc "The Lun name."
   end
 
   newparam(:localport) do
-    desc "The space reservation mode."
+    desc "The localport."
   end
 
   newparam(:user) do
-    desc "The space reservation mode."
+    desc "User for compellent."
   end
   
   newparam(:password) do
-    desc "The space reservation mode."
+    desc "Password for compellent."
   end
 
   newparam(:host) do
-    desc "The space reservation mode."
+    desc "IP-address for compellent."
   end
   
 end
