@@ -1,5 +1,6 @@
 require 'puppet/provider/compellent'
 require 'puppet/lib/ResponseParser'
+require 'puppet/lib/CommonLib'
 
 Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Server HBA creation, modification and deletion."
@@ -55,50 +56,12 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     return command
   end
   
-  def get_logpath(num)
-    temp_path = Pathname.new(__FILE__).parent
-    Puppet.debug("Temp PATH - #{temp_path}")
-    $i = 0
-    $num = num
-    path = Pathname.new(temp_path)
-    while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
-    end
-    temp_path = temp_path.join('logs')
-    Puppet.debug("Log Path #{temp_path}")
-    return  temp_path
-  end
-  
-  def get_unique_refid()
-    randno = Random.rand(100000)
-    pid = Process.pid
-    return "#{randno}_PID_#{pid}"
-  end
-  
-  def get_path(num)
-    temp_path = Pathname.new(__FILE__).parent
-    Puppet.debug("Temp PATH - #{temp_path}")
-    $i = 0
-    $num = num
-    path = Pathname.new(temp_path)
-    while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
-    end
-    temp_path = temp_path.join('lib/CompCU-6.3.jar')
-    Puppet.debug("Path #{temp_path}")
-    return  temp_path
-  end
-
   def create   
     Puppet.debug("Inside Add Server HBA Method.")
     add_hba_cli = add_serverhbacommandline
     resourcename = @resource[:name]
-    libpath = get_path(2)	
-    add_server_hba_exitcodexml = "#{get_logpath(2)}/addserverhbaExitCode_#{get_unique_refid}.xml"
+    libpath =CommonLib.get_path(1)	
+    add_server_hba_exitcodexml = "#{CommonLib.get_log_path(1)}/addserverhbaExitCode_#{CommonLib.get_unique_refid}.xml"
     add_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{add_server_hba_exitcodexml} -c \"#{add_hba_cli}\""
     Puppet.debug(add_server_hba_command)
     response =  system (add_server_hba_command)
@@ -119,8 +82,8 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     Puppet.debug("Inside Remove Server HBA Method.")
     delete_hba_cli = remove_serverhbacommandline
     resourcename = @resource[:name]	
-    libpath = get_path(2)
-    remove_server_hba_exitcodexml = "#{get_logpath(2)}/removeserverhbaExitCode_#{get_unique_refid}.xml"
+    libpath = CommonLib.get_path(1)
+    remove_server_hba_exitcodexml = "#{CommonLib.get_log_path(1)}/removeserverhbaExitCode_#{CommonLib.get_unique_refid}.xml"
     remove_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{remove_server_hba_exitcodexml} -c \"#{delete_hba_cli}\""
     Puppet.debug(remove_server_hba_command)    
     system(remove_server_hba_command)
@@ -143,10 +106,10 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     resourcename = @resource[:name]	
     Puppet.debug("Puppet::Provider::in checking for existence for resource  #{resourcename}.")
     Puppet.debug("ensure = #{@resource[:ensure]}")
-    libpath = get_path(2)
+    libpath = CommonLib.get_path(1)
     show_hba_cli = show_serverhbacommandline
-	server_hba_show_exitcode_xml = "#{get_logpath(2)}/serverHbaShowExitCode_#{get_unique_refid}.xml"
-	server_hba_show_response_xml = "#{get_logpath(2)}/serverHbaShowResponse_#{get_unique_refid}.xml"
+	server_hba_show_exitcode_xml = "#{CommonLib.get_log_path(1)}/serverHbaShowExitCode_#{CommonLib.get_unique_refid}.xml"
+	server_hba_show_response_xml = "#{CommonLib.get_log_path(1)}/serverHbaShowResponse_#{CommonLib.get_unique_refid}.xml"
 	
     show_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{server_hba_show_exitcode_xml} -c \"#{show_hba_cli} -xml #{server_hba_show_response_xml}\""
     system(show_server_hba_command)    

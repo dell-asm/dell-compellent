@@ -1,5 +1,6 @@
 require 'puppet/provider/compellent'
 require 'puppet/lib/ResponseParser'
+require 'puppet/lib/CommonLib'
 
 Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Volume creation, modification and deletion."
@@ -40,29 +41,14 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     return command
   end
 
-  def get_log_path(num)
-    temp_path = Pathname.new(__FILE__).parent
-    Puppet.debug("Temp PATH - #{temp_path}")
-    $i = 0
-    $num = num
-    path = Pathname.new(temp_path)
-    while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
-    end
-    temp_path = temp_path.join('logs')
-    Puppet.debug("Log Path #{temp_path}")
-    return  temp_path
-  end
 
   def get_deviceid
     Puppet.debug("Fetching information about the Volume")
-    libpath = get_path(2)
+    libpath = CommonLib.get_path(1)
     resourcename = @resource[:name]
     vol_show_cli = showvolume_commandline
-    volshow_respxml = "#{get_log_path(2)}/volshowResp_#{get_unique_refid}.xml"
-    volshow_exitcodexml = "#{get_log_path(2)}/volshowExitCode_#{get_unique_refid}.xml"
+    volshow_respxml = "#{CommonLib.get_log_path(1)}/volshowResp_#{CommonLib.get_unique_refid}.xml"
+    volshow_exitcodexml = "#{CommonLib.get_log_path(1)}/volshowExitCode_#{CommonLib.get_unique_refid}.xml"
     volume_show_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{volshow_exitcodexml} -c \"#{vol_show_cli} -xml #{volshow_respxml}\""
     Puppet.debug(volume_show_command)
     system(volume_show_command)
@@ -80,32 +66,12 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     return device_id
   end
 
-  def get_unique_refid()
-    randno = Random.rand(100000)
-    pid = Process.pid
-    return "#{randno}_PID_#{pid}"
-  end
 
-  def get_path(num)
-    temp_path = Pathname.new(__FILE__).parent
-    Puppet.debug("Temp PATH - #{temp_path}")
-    $i = 0
-    $num = num
-    path = Pathname.new(temp_path)
-    while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
-    end
-    temp_path = temp_path.join('lib/CompCU-6.3.jar')
-    Puppet.debug("Path #{temp_path}")
-    return  temp_path
-  end
 
   def create
 
     Puppet.debug("Inside Create Method.")
-    libpath = get_path(2)
+    libpath = CommonLib.get_path(1)
     folder_value = @resource[:volumefolder]
     host_value = @resource[:host]
     user_value = @resource[:user]
@@ -113,7 +79,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     resourcename = @resource[:name]
     volume_cli = createvolume_commandline
 
-    volfolder_exitcodexml = "#{get_log_path(2)}/volFolderCreateExitCode_#{get_unique_refid}.xml"
+    volfolder_exitcodexml = "#{CommonLib.get_log_path(1)}/volFolderCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 
     if "#{folder_value}".size != 0
       Puppet.debug("Creating volume folder with name '#{folder_value}'")
@@ -135,7 +101,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
       end
     end
 
-    volcreate_exitcodexml = "#{get_log_path(2)}/volCreateExitCode_#{get_unique_refid}.xml"
+    volcreate_exitcodexml = "#{CommonLib.get_log_path(1)}/volCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 
     volume_create_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{volcreate_exitcodexml} -c \"#{volume_cli}\""
     Puppet.debug(volume_create_command)
@@ -153,13 +119,13 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
   def destroy
     Puppet.debug("Inside Destroy method")
-    libpath = get_path(2)
+    libpath = CommonLib.get_path(1)
     resourcename = @resource[:name]
     host_value = @resource[:host]
     user_value = @resource[:user]
     password_value = @resource[:password]
     device_id = get_deviceid
-    voldestroy_exitcodexml = "#{get_log_path(2)}/volDestroyExitCode_#{get_unique_refid}.xml"
+    voldestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/volDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
     if  #{device_id} != ""
     Puppet.debug("Invoking destroy command")
       if #@{resource[:purge]} == "yes"

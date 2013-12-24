@@ -1,5 +1,6 @@
 require 'puppet/provider/compellent'
 require 'puppet/lib/ResponseParser'
+require 'puppet/lib/CommonLib'
 
 Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Server creation and deletion."
@@ -38,51 +39,13 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     return command
   end
   
-  def get_log_path(num)
-    temp_path = Pathname.new(__FILE__).parent
-    Puppet.debug("Temp PATH - #{temp_path}")
-    $i = 0
-    $num = num
-    path = Pathname.new(temp_path)
-    while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
-    end
-    temp_path = temp_path.join('logs')
-    Puppet.debug("Log Path #{temp_path}")
-    return  temp_path
-  end
-  
-  def get_unique_refid()
-    randno = Random.rand(100000)
-    pid = Process.pid
-    return "#{randno}_PID_#{pid}"
-  end
-  
-  def get_path(num)
-    temp_path = Pathname.new(__FILE__).parent
-    Puppet.debug("Temp PATH - #{temp_path}")
-    $i = 0
-    $num = num
-    path = Pathname.new(temp_path)
-    while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
-    end
-    temp_path = temp_path.join('lib/CompCU-6.3.jar')
-    Puppet.debug("Path #{temp_path}")
-    return  temp_path
-  end
-
   def create
     puts "Inside Create Method."
     server_name = @resource[:name]
     Puppet.debug("Resource name #{server_name}")
 	folder_value = @resource[:serverfolder]	
     servercli = create_servercommandline
-   libpath = get_path(2)
+   libpath = CommonLib.get_path(1)
   host_value = @resource[:host]
   password_value = @resource[:password]
  user_value = @resource[:user]
@@ -92,7 +55,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Creating server with name '#{server_name}'")
 	if "#{folder_value}".size != 0
 		Puppet.debug("Creating server folder with name '#{folder_value}'")
-		server_folder_exitcodexml = "#{get_log_path(2)}/serverFolderCreateExitCode_#{get_unique_refid}.xml"
+		server_folder_exitcodexml = "#{CommonLib.get_log_path(1)}/serverFolderCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 		server_folder_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{server_folder_exitcodexml} -c \"serverfolder create -name '#{folder_value}'\""
 		Puppet.debug(server_folder_command)
         system (server_folder_command)
@@ -111,7 +74,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 		end
 	end
 	
-    servercreate_exitcodexml = "#{get_log_path(2)}/serverCreateExitCode_#{get_unique_refid}.xml"
+    servercreate_exitcodexml = "#{CommonLib.get_log_path(1)}/serverCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 	
     servercreatecommand = "java -jar -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{servercreate_exitcodexml} -c \"#{servercli}\""
     Puppet.debug(servercreatecommand)
@@ -134,8 +97,8 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Inside Destroy method")
     Puppet.debug("Destroying server #{server_name}")
 
-    libpath = get_path(2)
-    serverdestroy_exitcodexml = "#{get_log_path(2)}/serverDestroyExitCode_#{get_unique_refid}.xml"
+    libpath = CommonLib.get_path(1)
+    serverdestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/serverDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
     server_folder = @resource[:serverfolder]
     if server_folder.length > 0
 	server_index = self.hash_map['server_Index']
@@ -161,10 +124,10 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
   def exists?
     Puppet.debug("Puppet::Provider::Compellenet_server: checking existance of compellent server #{@resource[:name]}")
     Puppet.debug(" resource[:ensure]  ==  #{@resource[:ensure]}")
-	libpath = get_path(2)
+	libpath = CommonLib.get_path(1)
 	servershowcli = showserver_commandline
-	servershow_exitcodexml = "#{get_log_path(2)}/serverShowExitCode_#{get_unique_refid}.xml"
-	servershow_responsexml = "#{get_log_path(2)}/serverShowResponse_#{get_unique_refid}.xml"
+	servershow_exitcodexml = "#{CommonLib.get_log_path(1)}/serverShowExitCode_#{CommonLib.get_unique_refid}.xml"
+	servershow_responsexml = "#{CommonLib.get_log_path(1)}/serverShowResponse_#{CommonLib.get_unique_refid}.xml"
 	servershow_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{servershow_exitcodexml} -c \"#{servershowcli} -xml #{servershow_responsexml}\""
     system(servershow_command)
     
