@@ -48,12 +48,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
 
     serverfolder: This parameter defines the folder name for the server object.        
 
-    user:(Required) This parameter defines the storage admin user name.
-
-    password:(Required) This parameter defines the storage admin password.
-
-    host:(Required) This parameter defines the storage ipAddress/name.
-
 # -------------------------------------------------------------------------
 # Parameter signature 
 # -------------------------------------------------------------------------
@@ -61,9 +55,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
 #Provide transport and HBA properties
 
     define compellent::hba_add_delete (
-            $user, 
-            $password,
-            $host,
             $wwn,
             $ensure        	= 'present',
             $porttype	    = '',
@@ -76,10 +67,7 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
             porttype		     => $porttype,
             wwn	          	     => $wwn,
             manual		         => $manual,
-            user			     => $user,
-            password 		     => $password,
             serverfolder         => $serverfolder,
-            host			     => $host,
         }
     }
 
@@ -90,7 +78,7 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
    The following files capture the details for the sample init.pp and the supported files:
 
     - sample_init.pp_hba
-    - sample_hba_add_delete.pp
+    - hba_add_delete.pp
    
    A user can create an init.pp file based on the above sample files, and call the "puppet device" command , for example: 
    # puppet device

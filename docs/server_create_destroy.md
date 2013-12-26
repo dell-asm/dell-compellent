@@ -45,11 +45,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
     
     wwn:(Required) This parameter defines a globally unique world wide name for the requested HBA
 			        
-    user:(Required) This parameter defines the storage admin user name.
-
-    password:(Required) This parameter defines the storage admin password.
-
-    host:(Required) This parameter defines the storage ipAddress/name.
 
 # -------------------------------------------------------------------------
 # Parameter signature 
@@ -58,9 +53,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
 #Provide transport and volume properties
 
     define compellent::server_create_destroy (
-            $user, 
-            $password,
-            $host,
             $wwn,
             $operatingsystem      = 'Windows 2012',
             $ensure        	      = 'present',
@@ -74,9 +66,7 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
         serverfolder         => $serverfolder,
         notes			     => $notes,   
         wwn			         => $wwn,
-        user			     => $user,
-        password 		     => $password,
-        host			     => $host,
+       
     }
 }
 
@@ -87,7 +77,7 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
    The following files capture the details of the sample init.pp and the supported files:
 
     - sample_init.pp_server
-    - sample_server_create_destroy.pp
+    - server_create_destroy.pp
    
    A user can create an init.pp file based on the above sample files, and call the "puppet device" command , for example: 
    # puppet device

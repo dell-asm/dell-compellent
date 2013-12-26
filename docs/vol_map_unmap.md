@@ -57,12 +57,7 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
     singlepath:	 This parameter indicates that only a single local port can be used for mapping. If omitted, all local ports are used for mapping.
                  The possible values are: true/false.
 
-    user:(Required) This parameter defines the storage admin user name.
-
-    password:(Required) This parameter defines the storage admin password.
-
-    host:(Required) This parameter defines the storage ipAddress/name.
-
+  
 # -------------------------------------------------------------------------
 # Parameter signature 
 # -------------------------------------------------------------------------
@@ -70,9 +65,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
 #Provide transport and Map properties
 
     define compellent::volume_map_unmap (
-            $user, 
-            $password,
-            $host,
             $servername,
             $ensure        	    = 'absent',
             $boot			    = false,
@@ -96,9 +88,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
             force		         => $force,   
             readonly 		     => $readonly,
             singlepath	         => $singlepath,
-            user			     => $user,
-            password 		     => $password,
-            host			     => $host,
         }
     }
 
@@ -109,7 +98,7 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
   The following files capture the details for the sample init.pp and the supported files:
 
     - sample_init.pp_mapvol
-    - sample_volume_map_unmap.pp
+    - volume_map_unmap.pp
    
    A user can create a init.pp file based on the above sample files and call the "puppet device" command , for example: 
    # puppet device

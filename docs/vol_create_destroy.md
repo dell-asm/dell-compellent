@@ -50,12 +50,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
 
     storageprofile: This parameter specifies a storage profile for the volume.
 
-    user:(Required) This parameter defines the storage admin user name.
-
-    password:(Required) This parameter defines the storage admin password.
-
-    host:(Required) This parameter defines the storage ipAddress/name.
-
     purge: This parameter indicates that the volume should be purged. If the purge option is not specified, the volume is still visible using the volume show command and contains the status of the Recycled. Possible values for this parameter are "yes/no".
     Default value is "yes". 
 
@@ -66,9 +60,6 @@ The Compellent storage module uses the Compellent JAVA SDK (CompCU-6.3.jar) to i
 #Provide transport and volume properties
 
 define compellent::volume_create_destroy (
-        $user, 
-        $password,
-        $host,
         $size,
         $purge          = 'yes',
         $ensure        	= 'present',
@@ -87,9 +78,6 @@ define compellent::volume_create_destroy (
         notes			 => $notes,   
         replayprofile	 => $replayprofile,
         storageprofile	 => $storageprofile,
-        user			 => $user,
-        password 		 => $password,
-        host			 => $host,
         purge            => $purge,
     }
 }
@@ -101,7 +89,7 @@ define compellent::volume_create_destroy (
    The following files capture the details for the sample init.pp and supported files:
 
     - sample_init.pp_volume
-    - sample_volume_create_destroy.pp
+    - volume_create_destroy.pp
    
    A user can create an init.pp file based on the above sample files and call the "puppet device" command , for example: 
    # puppet device
