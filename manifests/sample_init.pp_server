@@ -18,9 +18,6 @@ class compellent{
   serverfolder 		=> '',
   notes	            => '',
   wwn 			    => '21000024FF44486F',
-  user 			    => 'Admin',
-  password 		    => 'P@ssw0rd',
-  host 			    => '172.17.10.40'
     }
 }
 

@@ -14,9 +14,6 @@
 
 class compellent{
  compellent::volume_map_unmap { 'Test_Volume_Test':
-  user              => 'Admin',
-  password          => 'P@ssw0rd',
-  host              => '172.17.10.40',
   ensure        	=> 'present',
   boot				=> true,  
   volumefolder      => '',

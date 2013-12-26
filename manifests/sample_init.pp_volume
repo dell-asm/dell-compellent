@@ -14,9 +14,6 @@
 
 class compellent{
     compellent::volume_create_destroy { 'Test_Volume':
-        user              => 'Admin',
-        password          => 'P@ssw0rd',
-        host              => '172.17.10.40',
         purge             => 'yes',
         size 		      => '2g',
         ensure        	  => 'absent',

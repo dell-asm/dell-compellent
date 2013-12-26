@@ -4,9 +4,6 @@
 #
 
 define compellent::volume_map_unmap (
-  $user, 
-  $password,
-  $host,
   $servername,
   $ensure        	= 'absent',
   $boot			    = false,
@@ -30,8 +27,5 @@ define compellent::volume_map_unmap (
   force		         => $force,   
   readonly 		     => $readonly,
   singlepath	     => $singlepath,
-  user			     => $user,
-  password 		     => $password,
-  host			     => $host,
   }
 }

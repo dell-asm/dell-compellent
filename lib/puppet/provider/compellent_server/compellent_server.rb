@@ -56,7 +56,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 	if "#{folder_value}".size != 0
 		Puppet.debug("Creating server folder with name '#{folder_value}'")
 		server_folder_exitcodexml = "#{CommonLib.get_log_path(1)}/serverFolderCreateExitCode_#{CommonLib.get_unique_refid}.xml"
-		server_folder_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{server_folder_exitcodexml} -c \"serverfolder create -name '#{folder_value}'\""
+		server_folder_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{server_folder_exitcodexml} -c \"serverfolder create -name '#{folder_value}'\""
 		Puppet.debug(server_folder_command)
         system (server_folder_command)
 		parser_obj=ResponseParser.new('_')
@@ -76,7 +76,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 	
     servercreate_exitcodexml = "#{CommonLib.get_log_path(1)}/serverCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 	
-    servercreatecommand = "java -jar -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{servercreate_exitcodexml} -c \"#{servercli}\""
+    servercreatecommand = "java -jar -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{servercreate_exitcodexml} -c \"#{servercli}\""
     Puppet.debug(servercreatecommand)
     response =  system (servercreatecommand)
 
@@ -106,7 +106,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 	server_index = self.hash_map['Index'][0]	
     end
     Puppet.debug("server_index : #{server_index}")
-    serverdestroycommand = "java -jar -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{serverdestroy_exitcodexml} -c \"server delete -index #{server_index}\""
+    serverdestroycommand = "java -jar -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{serverdestroy_exitcodexml} -c \"server delete -index #{server_index}\""
     system(serverdestroycommand)
 
     parser_obj=ResponseParser.new('_')
@@ -128,7 +128,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 	servershowcli = showserver_commandline
 	servershow_exitcodexml = "#{CommonLib.get_log_path(1)}/serverShowExitCode_#{CommonLib.get_unique_refid}.xml"
 	servershow_responsexml = "#{CommonLib.get_log_path(1)}/serverShowResponse_#{CommonLib.get_unique_refid}.xml"
-	servershow_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{servershow_exitcodexml} -c \"#{servershowcli} -xml #{servershow_responsexml}\""
+	servershow_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{servershow_exitcodexml} -c \"#{servershowcli} -xml #{servershow_responsexml}\""
     system(servershow_command)
     
     parser_obj=ResponseParser.new('_')

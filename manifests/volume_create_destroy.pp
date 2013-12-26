@@ -5,9 +5,6 @@
 #
 #
 define compellent::volume_create_destroy (
-        $user, 
-        $password,
-        $host,
         $size           = '10g',
         $purge          = 'yes',
         $ensure        	= 'present',
@@ -26,9 +23,6 @@ define compellent::volume_create_destroy (
         notes			 => $notes,   
         replayprofile	 => $replayprofile,
         storageprofile	 => $storageprofile,
-        user			 => $user,
-        password 		 => $password,
-        host			 => $host,
         purge            => $purge,
     }
 }

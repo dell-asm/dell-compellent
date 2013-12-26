@@ -36,9 +36,6 @@
 #
 
 define compellent::hba_add_delete (
-  $user, 
-  $password,
-  $host,
   $wwn,
   $ensure        	= 'present',
   $porttype	        = '',
@@ -51,9 +48,6 @@ define compellent::hba_add_delete (
   porttype		     => $porttype,
   wwn	          	 => $wwn,
   manual		     => $manual,
-  user			     => $user,
-  password 		     => $password,
   serverfolder       => $serverfolder,
-  host			     => $host,
   }
 }

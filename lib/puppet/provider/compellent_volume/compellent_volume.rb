@@ -49,7 +49,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     vol_show_cli = showvolume_commandline
     volshow_respxml = "#{CommonLib.get_log_path(1)}/volshowResp_#{CommonLib.get_unique_refid}.xml"
     volshow_exitcodexml = "#{CommonLib.get_log_path(1)}/volshowExitCode_#{CommonLib.get_unique_refid}.xml"
-    volume_show_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{volshow_exitcodexml} -c \"#{vol_show_cli} -xml #{volshow_respxml}\""
+    volume_show_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{volshow_exitcodexml} -c \"#{vol_show_cli} -xml #{volshow_respxml}\""
     Puppet.debug(volume_show_command)
     system(volume_show_command)
     Puppet.debug("in method get_deviceid, after exectuing show volume command")
@@ -83,7 +83,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
     if "#{folder_value}".size != 0
       Puppet.debug("Creating volume folder with name '#{folder_value}'")
-      volume_folder_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{volfolder_exitcodexml} -c \"volumefolder create -name '#{folder_value}'\""
+      volume_folder_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{volfolder_exitcodexml} -c \"volumefolder create -name '#{folder_value}'\""
       Puppet.debug(volume_folder_command)
       system (volume_folder_command)
       parser_obj=ResponseParser.new('_')
@@ -103,7 +103,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
     volcreate_exitcodexml = "#{CommonLib.get_log_path(1)}/volCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 
-    volume_create_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{volcreate_exitcodexml} -c \"#{volume_cli}\""
+    volume_create_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{volcreate_exitcodexml} -c \"#{volume_cli}\""
     Puppet.debug(volume_create_command)
     response =  system (volume_create_command)
 
@@ -129,9 +129,9 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     if  #{device_id} != ""
     Puppet.debug("Invoking destroy command")
       if #@{resource[:purge]} == "yes"
-      volume_destroy_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id} -purge\""
+      volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id} -purge\""
       else
-        volume_destroy_command = "java -jar #{libpath} -host #{host_value} -user #{user_value} -password #{password_value} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id}\""
+        volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id}\""
       end
       Puppet.debug(volume_destroy_command)
       system(volume_destroy_command)

@@ -62,7 +62,7 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     resourcename = @resource[:name]
     libpath =CommonLib.get_path(1)	
     add_server_hba_exitcodexml = "#{CommonLib.get_log_path(1)}/addserverhbaExitCode_#{CommonLib.get_unique_refid}.xml"
-    add_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{add_server_hba_exitcodexml} -c \"#{add_hba_cli}\""
+    add_server_hba_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{add_server_hba_exitcodexml} -c \"#{add_hba_cli}\""
     Puppet.debug(add_server_hba_command)
     response =  system (add_server_hba_command)
 
@@ -84,7 +84,7 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     resourcename = @resource[:name]	
     libpath = CommonLib.get_path(1)
     remove_server_hba_exitcodexml = "#{CommonLib.get_log_path(1)}/removeserverhbaExitCode_#{CommonLib.get_unique_refid}.xml"
-    remove_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{remove_server_hba_exitcodexml} -c \"#{delete_hba_cli}\""
+    remove_server_hba_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{remove_server_hba_exitcodexml} -c \"#{delete_hba_cli}\""
     Puppet.debug(remove_server_hba_command)    
     system(remove_server_hba_command)
 
@@ -111,7 +111,7 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
 	server_hba_show_exitcode_xml = "#{CommonLib.get_log_path(1)}/serverHbaShowExitCode_#{CommonLib.get_unique_refid}.xml"
 	server_hba_show_response_xml = "#{CommonLib.get_log_path(1)}/serverHbaShowResponse_#{CommonLib.get_unique_refid}.xml"
 	
-    show_server_hba_command = "java -jar #{libpath} -host #{@resource[:host]} -user #{@resource[:user]} -password #{@resource[:password]} -xmloutputfile #{server_hba_show_exitcode_xml} -c \"#{show_hba_cli} -xml #{server_hba_show_response_xml}\""
+    show_server_hba_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{server_hba_show_exitcode_xml} -c \"#{show_hba_cli} -xml #{server_hba_show_response_xml}\""
     system(show_server_hba_command)    
     parser_obj=ResponseParser.new('_')
 	folder_value = @resource[:serverfolder] 
