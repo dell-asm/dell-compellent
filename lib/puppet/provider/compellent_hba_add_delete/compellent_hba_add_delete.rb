@@ -5,8 +5,9 @@ require 'puppet/lib/CommonLib'
 Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Server HBA creation, modification and deletion."
   
-  attr_accessor :hash_map
+  attr_accessor :hash_map, :valid_wwn
   @hash_map
+  @valid_wwn
   
   def add_serverhbacommandline
     #command = "server addhba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"
@@ -14,11 +15,12 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
         folder_value = @resource[:serverfolder]
 	Puppet.debug(folder_value)
 	if folder_value.length > 0
-	    server_index = self.hash_map['server_Index']
-	    command = "server addhba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"
+	    server_index = self.hash_map['Index']
+	     command = "server addhba -index '#{server_index}' -WWN '#{self.valid_wwn}'"
 	else 
 	   server_index = self.hash_map['Index'][0]
-	   command = "server addhba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"
+	   #command = "server addhba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"
+	    command = "server addhba -index '#{server_index}' -WWN '#{self.valid_wwn}'"
 	end
 
    porttype_value = @resource[:porttype]
@@ -43,7 +45,8 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
 	else
 		server_index = self.hash_map['Index'][0]
 	end
-	command = "server removehba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"	
+	#command = "server removehba -index '#{server_index}' -WWN '#{@resource[:wwn]}'"	
+	 command = "server removehba -index '#{server_index}' -WWN '#{self.valid_wwn}'"
     return command
 
   end
@@ -97,9 +100,42 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
       Puppet.info("Unable to remove the HBA from the server '#{resourcename}'.")
       raise Puppet::Error, "#{hash['Error']}"
     end
-
-
-	
+  end
+ 
+  def find_wwn_list(wwn_list)
+	Puppet.debug("in method find_wwn_list, wwn_list : #{wwn_list}")
+	if ("#{wwn_list}".size != 0 )
+          str = (@resource[:wwn]).split(",")
+          Puppet.debug(str)
+  	  self.valid_wwn = ""
+          if("#{@resource[:ensure]}" == "absent")
+	      for item in str
+    		  if (wwn_list.include? item)
+			if self.valid_wwn.length  > 0
+				self.valid_wwn = self.valid_wwn + ",#{item}"
+			else
+				self.valid_wwn = item
+			end
+		  end	
+	      end	
+ 	  else 
+                for item in str
+        		if !(wwn_list.include? item)
+				if self.valid_wwn.length  > 0
+					self.valid_wwn =  self.valid_wwn + ",#{item}" 
+				else
+					self.valid_wwn = item	
+				end
+			end
+	         end
+	  end
+	  else
+             if("#{@resource[:ensure]}" == "absent")
+                self.valid_wwn = ""
+	     else
+	        self.valid_wwn = @resource[:wwn]
+	     end		 
+	  end 
   end
 
   def exists?
@@ -120,9 +156,11 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
 		    self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
 		    wwn_list = self.hash_map['WWN_List']
 	     else
-                   parser_obj.parse_discovery(server_hba_show_exitcode_xml,server_hba_show_response_xml,0)
-		   self.hash_map = parser_obj.return_response
-                   wwn_list = self.hash_map['server_WWN_List']
+                   #parser_obj.parse_discovery(server_hba_show_exitcode_xml,server_hba_show_response_xml,0)
+	            self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
+		   #self.hash_map = parser_obj.return_response
+                   Puppet.debug("self.hash_map ::::::::::::::::::::: #{self.hash_map}")
+                   wwn_list = self.hash_map['WWN_List']
 	     end
 	    Puppet.debug("folder is not null : #{self.hash_map}")
 	else
@@ -131,15 +169,22 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
 	    wwn_list = self.hash_map['WWN_List']
 	end
     Puppet.debug("WWN list - #{wwn_list}")
-	Puppet.debug(@resource[:wwn])
-    if ((wwn_list != nil) && (wwn_list.include? @resource[:wwn]))
-      Puppet.debug("An HBA exist in server #{resourcename}.")
-      true
-   else
-      Puppet.debug("An HBA does not exist in server #{resourcename}.")  
-      false
+    find_wwn_list(wwn_list)
+    Puppet.debug("valid_wwn after soring the valid wwn : #{self.valid_wwn}")
+    Puppet.debug(@resource[:wwn])
+    if (self.valid_wwn.length > 0)
+      if("#{@resource[:ensure]}" == "absent")	
+	    true
+      else
+	       false
+      end
+    else
+	if("#{@resource[:ensure]}" == "absent")
+	        false
+   	else
+	      true
+	end			
     end
-	end
-
+   end
 end
 

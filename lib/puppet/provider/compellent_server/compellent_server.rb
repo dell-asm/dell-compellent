@@ -43,12 +43,9 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     puts "Inside Create Method."
     server_name = @resource[:name]
     Puppet.debug("Resource name #{server_name}")
-	folder_value = @resource[:serverfolder]	
+    folder_value = @resource[:serverfolder]	
     servercli = create_servercommandline
    libpath = CommonLib.get_path(1)
-  host_value = @resource[:host]
-  password_value = @resource[:password]
- user_value = @resource[:user]
     puts "Server CLI"
     puts servercli
     

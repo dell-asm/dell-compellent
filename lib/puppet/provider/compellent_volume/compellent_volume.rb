@@ -73,9 +73,6 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     Puppet.debug("Inside Create Method.")
     libpath = CommonLib.get_path(1)
     folder_value = @resource[:volumefolder]
-    host_value = @resource[:host]
-    user_value = @resource[:user]
-    password_value = @resource[:password]
     resourcename = @resource[:name]
     volume_cli = createvolume_commandline
 
@@ -121,14 +118,11 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     Puppet.debug("Inside Destroy method")
     libpath = CommonLib.get_path(1)
     resourcename = @resource[:name]
-    host_value = @resource[:host]
-    user_value = @resource[:user]
-    password_value = @resource[:password]
     device_id = get_deviceid
     voldestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/volDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
     if  #{device_id} != ""
     Puppet.debug("Invoking destroy command")
-      if #@{resource[:purge]} == "yes"
+      if (@resource[:purge] == "yes")
       volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id} -purge\""
       else
         volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id}\""

@@ -13,13 +13,18 @@ Puppet::Type.newtype(:compellent_hba_add_delete) do
   newparam(:wwn) do
     desc "The WWN. Valid characters are a-z, 1-9 & underscore or can be a blank value."   
     validate do |value|
-      unless value =~ /^\w+$/
-        raise ArgumentError, "%s is not a valid server name." % value
+      unless value =~ /^[\w,]*$/
+        raise ArgumentError, "%s is not a valid wwn number." % value
       end
     end
   end
    newparam(:serverfolder) do
     desc "The server folder name, optional parameter"
+    validate do |value|
+      unless value =~ /^[\w\s\-]*$/
+         raise ArgumentError, "%s is not a valid initial server folder name." % value
+      end
+    end
   end
   
   newparam(:porttype) do
@@ -34,18 +39,6 @@ Puppet::Type.newtype(:compellent_hba_add_delete) do
   end 
  
   
-  newparam(:user) do
-    desc "User for compellent."
-    
-  end
-  
-  newparam(:password) do
-    desc "Password for compellent."
-  end
-  
-  newparam(:host) do
-    desc "IP-address for compellent."
-  end 
   
     
 end

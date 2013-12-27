@@ -7,8 +7,13 @@ Puppet::Type.newtype(:compellent_server) do
 
 
  newparam(:name) do
-    desc "The volume name. Valid characters are a-z, 1-9 & underscore."
+    desc "The server name. Valid characters are a-z, 1-9 & underscore."
     isnamevar
+    validate do |value|
+      unless value =~ /^[\w\s\-]+$/
+         raise ArgumentError, "%s is not a valid initial server name." % value
+      end
+    end
   end 
   
   newparam(:operatingsystem) do
@@ -20,29 +25,22 @@ Puppet::Type.newtype(:compellent_server) do
   end
   
   newparam(:serverfolder) do
-    desc "The server folder."
+    desc "The server folder name."
+    validate do |value|
+      unless value =~ /^[\w\s\-]*$/
+         raise ArgumentError, "%s is not a valid initial server folder name." % value
+      end
+    end
   end
   
  newparam(:wwn) do
     desc "The WWN to map Server."
     validate do |value|
-      unless value =~ /^\w+$/
+      unless value =~ /^[\w,]*$/
         raise ArgumentError, "%s is not a valid WWN number." % value
       end
     end
  end
   
-  newparam(:user) do
-    desc "User for compellent."
-  end
-  
-  newparam(:password) do
-    desc "Password for compellent."    
-  end
-  
-  newparam(:host) do
-    desc "IP address for compellent." 
-  end
-   
 end
 

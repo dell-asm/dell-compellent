@@ -8,11 +8,16 @@ Puppet::Type.newtype(:compellent_volume) do
   newparam(:name) do
     desc "The volume name. Valid characters are a-z, 1-9 & underscore."
     isnamevar
+    validate do |value|
+      unless value =~ /^[\w\s\-]+$/
+         raise ArgumentError, "%s is not a valid initial volume name." % value
+      end
+    end
   end
   
   newparam(:size) do
     desc "The initial volume size. Valid format is 1-9(kmgt)."
-    defaultto "1g"
+    defaultto "10g"
     validate do |value|
       unless value =~ /^\d+[kmgt]$/
          raise ArgumentError, "%s is not a valid initial volume size." % value
@@ -28,11 +33,16 @@ Puppet::Type.newtype(:compellent_volume) do
   end
   
   newparam(:volumefolder) do
-    desc "The folder this volume should be created in." 
+    desc "The volume folder name. Valid characters are a-z, 1-9 & underscore." 
+    validate do |value|
+      unless value =~ /^[\w\s\-]*$/ 
+         raise ArgumentError, "%s is not a valid initial volume folder name." % value
+      end
+    end
   end
  newparam(:purge) do
-	desc "Force option for create volume."
-  end
+   desc "Force option for create volume."
+ end
   
   newparam(:notes) do
     desc "The language code this volume should use."
@@ -44,17 +54,6 @@ Puppet::Type.newtype(:compellent_volume) do
   
   newparam(:storageprofile) do
     desc "The space reservation mode."
-  end
-  
-  newparam(:user) do
-    desc "User for Compellent."
-  end
-  
-  newparam(:password) do
-    desc "Password for Compellent."
-  end
-  newparam(:host) do
-    desc "IP address of Compellent."
   end
   
 end
