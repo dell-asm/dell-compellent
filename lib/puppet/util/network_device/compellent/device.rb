@@ -11,6 +11,7 @@ require 'puppet/lib/CommonLib'
 class Puppet::Util::NetworkDevice::Compellent::Device
 
   attr_accessor :url, :transport
+
   def initialize(url, option = {})
     Puppet.debug("Device login started")
     @url = URI.parse(url)
@@ -23,18 +24,13 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     Puppet.debug("Host IP is #{@url.host}  #{@url.scheme}")
     @transport = Puppet::Util::NetworkDevice::Transport_compellent.new
     @transport.host = @url.host
-    @transport.user = @url.user
-    @transport.password = @url.password
+    @transport.user = URI.decode(@url.user)
+    @transport.password = URI.decode(@url.password)
     Puppet.debug("host is #{@transport.host}")
-    libpath = CommonLib.get_path(1)
 
     login_respxml = "#{CommonLib.get_log_path(1)}/loginResp_#{CommonLib.get_unique_refid}.xml"
-    login_exitcodexml = "#{CommonLib.get_log_path(1)}/loginExitCode_#{CommonLib.get_unique_refid}.xml"
-    
-    response = system("java -jar #{libpath} -host  #{@url.host} -user #{@url.user} -password #{@url.password} -xmloutputfile #{login_exitcodexml} -c \"system show -xml #{login_respxml}\" ")
-    parser_obj=ResponseParser.new('_')
-    parser_obj.parse_exitcode(login_exitcodexml)
-    hash= parser_obj.return_response
+    response = @transport.exec("system show -xml #{login_respxml}")
+    hash = response[:xml_output_hash]
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Login successful..")
     else
@@ -50,5 +46,3 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     facts
   end
 end
-
-
