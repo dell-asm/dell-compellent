@@ -56,12 +56,11 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:volumefolder]
     if folder_value.length  > 0
-	parser_obj.parse_discovery(volshow_exitcodexml,volshow_respxml,0)
-	hash= parser_obj.return_response 
+		parser_obj.parse_discovery(volshow_exitcodexml,volshow_respxml,0)
+		hash= parser_obj.return_response 
     else
-	hash = parser_obj.retrieve_empty_folder_volume_properties(volshow_respxml,@resource[:name])
+		hash = parser_obj.retrieve_empty_folder_volume_properties(volshow_respxml,@resource[:name])
     end
-       device_id = "#{hash['volume_DeviceID']}"
     device_id = "#{hash['volume_DeviceID']}"
     return device_id
   end
@@ -79,23 +78,23 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     volfolder_exitcodexml = "#{CommonLib.get_log_path(1)}/volFolderCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 
     if "#{folder_value}".size != 0
-      Puppet.debug("Creating volume folder with name '#{folder_value}'")
-      volume_folder_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{volfolder_exitcodexml} -c \"volumefolder create -name '#{folder_value}'\""
-      Puppet.debug(volume_folder_command)
-      system (volume_folder_command)
-      parser_obj=ResponseParser.new('_')
-      parser_obj.parse_exitcode(volfolder_exitcodexml)
-      hash= parser_obj.return_response
-      if "#{hash['Success']}".to_str() == "TRUE"
-        Puppet.info("Successfully created the volume folder '#{folder_value}'.")
-      else
-        existresult = "#{hash['Error']}".to_str()
-        if existresult.include? "already exists"
-          Puppet.info("Volume folder '#{folder_value}' already exists.")
+		Puppet.debug("Creating volume folder with name '#{folder_value}'")
+		volume_folder_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{volfolder_exitcodexml} -c \"volumefolder create -name '#{folder_value}'\""
+		Puppet.debug(volume_folder_command)
+		system (volume_folder_command)
+		parser_obj=ResponseParser.new('_')
+		parser_obj.parse_exitcode(volfolder_exitcodexml)
+		hash= parser_obj.return_response
+		if "#{hash['Success']}".to_str() == "TRUE"
+			Puppet.info("Successfully created the volume folder '#{folder_value}'.")
         else
-          raise Puppet::Error, "#{hash['Error']}"
-        end
-      end
+			existresult = "#{hash['Error']}".to_str()
+			if existresult.include? "already exists"
+				Puppet.info("Volume folder '#{folder_value}' already exists.")
+			else
+				raise Puppet::Error, "#{hash['Error']}"
+			end
+		end
     end
 
     volcreate_exitcodexml = "#{CommonLib.get_log_path(1)}/volCreateExitCode_#{CommonLib.get_unique_refid}.xml"
@@ -108,9 +107,9 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     parser_obj.parse_exitcode(volcreate_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.info("Successfully created the volume '#{resourcename}'.")
+		Puppet.info("Successfully created the volume '#{resourcename}'.")
     else
-      raise Puppet::Error, "#{hash['Error']}"
+		raise Puppet::Error, "#{hash['Error']}"
     end
   end
 
@@ -121,14 +120,14 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     device_id = get_deviceid
     voldestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/volDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
     if  #{device_id} != ""
-    Puppet.debug("Invoking destroy command")
-      if (@resource[:purge] == "yes")
-      volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id} -purge\""
-      else
-        volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id}\""
-      end
-      Puppet.debug(volume_destroy_command)
-      system(volume_destroy_command)
+		Puppet.debug("Invoking destroy command")
+		if (@resource[:purge] == "yes")
+			volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id} -purge\""
+		else
+			volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id}\""
+		end
+		Puppet.debug(volume_destroy_command)
+		system(volume_destroy_command)
     end
   end
 
@@ -138,11 +137,11 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     Puppet.debug("Device Id for Volume - #{device_id}")
 
     if  "#{device_id}" == ""
-      Puppet.debug("Puppet::Volume '#{resourcename}' does not exist")
-      false
-    else
-      Puppet.debug("Puppet::Volume '#{resourcename}' exist")
-      true
+		Puppet.debug("Puppet::Volume '#{resourcename}' does not exist")
+		false
+	else
+		Puppet.debug("Puppet::Volume '#{resourcename}' exist")
+		true
     end
   end
 end

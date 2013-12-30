@@ -58,27 +58,6 @@ class ResponseParser
     key_name
   end
 
-  #  def parse_discovery(result_file_name, output_file_name,index)
-  #    result_file = File.new(result_file_name)
-  #    result_doc = Document.new(result_file)
-  #    result= XPath.first(result_doc, "//Success")
-  #    if result.text.eql?'TRUE'
-  #      result_file = File.new(output_file_name)
-  #      output_doc = Document.new(result_file)
-  #      #index=1;
-  #      output_doc.root.each_element do |system|
-  #        if index > 0
-  #          key= "#{system.name()}#{@seperator}#{index}"
-  #        else
-  #          key= "#{system.name()}"
-  #        end
-  #        read_node(system,key,0)
-  #        index=index+1
-  #      end
-  #    end
-  #    @response_map
-  #  end
-
   def parse_diskfolder_xml(result_file_name, output_file_name)
     result_file = File.new(result_file_name)
     result_doc = Document.new(result_file)
@@ -96,26 +75,13 @@ class ResponseParser
     @response_map
   end
 
-  #  def read_diskfolder_node(node,key_name)
-  #    if node.has_elements?
-  #      node.each_element do |child|
-  #        read_node(child,key_name)
-  #      end
-  #    else
-  #      puts node.parent
-  #      key_name="#{key_name}#{@seperator}#{node.name()}"
-  #      self.response_map[key_name]=node.text
-  #    end
-  #    key_name
-  #  end
-
   def trim_spaces(element_array)
-  index=0
-   while index<element_array.size do
-   element_array[index]=element_array[index].strip
-   index+=1
-   end
-   element_array
+    index=0
+    while index<element_array.size do
+       element_array[index]=element_array[index].strip
+       index+=1
+    end
+    element_array
 end
 
   def retrieve_server_properties(server_file_name)
@@ -136,6 +102,13 @@ end
          index+=1
        end
       prop_map["Volume"]=volume_list
+      volume_id=Array.new
+      index=0
+      result= XPath.each(result_doc, "//server/Mappings/mapping/DeviceID") do |deviceid|
+         volume_id[index] = deviceid.text
+         index+=1
+       end
+      prop_map["Volume_ID"]=volume_id		
       prop_map
   end
 
@@ -214,8 +187,10 @@ end
         deviceId_list=Array.new
         index=0
         XPath.each(result_doc, "//server/Mappings/mapping/DeviceID") do |deviceId_element|
-          deviceId_list[index]=deviceId_element.text
-          index+=1
+	  if deviceId_element.parent.parent.parent == volume_element
+	    deviceId_list[index]=deviceId_element.text
+	    index+=1
+	    end	
         end
         prop_map['DeviceId']=deviceId_list
         result= true

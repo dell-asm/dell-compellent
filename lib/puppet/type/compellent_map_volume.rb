@@ -8,6 +8,11 @@ Puppet::Type.newtype(:compellent_map_volume) do
   newparam(:name) do
     desc "The volume name needs to be map with server. Valid characters are a-z, 1-9 & underscore."
     isnamevar
+    validate do |value|
+      unless value =~ /^[\w\s\-]+$/
+         raise ArgumentError, "%s is not a valid initial volume name." % value
+      end
+    end 
   end
   
   
@@ -20,10 +25,20 @@ Puppet::Type.newtype(:compellent_map_volume) do
 
   newparam(:volumefolder) do
     desc "The vlolume folder name, optional parameter."
+    validate do |value|
+      unless value =~ /^[\w\s\-]*$/
+         raise ArgumentError, "%s is not a valid initial volume folder name." % value
+      end
+    end
   end
 
   newparam(:serverfolder) do
     desc "The server folder name, optional parameter."
+    validate do |value|
+      unless value =~ /^[\w\s\-]*$/
+         raise ArgumentError, "%s is not a valid initial server folder name." % value
+      end
+    end
   end
   
   newparam(:force, :boolean => true) do
@@ -49,6 +64,11 @@ Puppet::Type.newtype(:compellent_map_volume) do
   
   newparam(:servername) do
     desc "The server name needs to be map with volume"
+    validate do |value|
+      unless value =~ /^[\w\s\-]+$/
+         raise ArgumentError, "%s is not a valid initial server name." % value
+      end
+    end
   end
 
   newparam(:lun) do
@@ -58,18 +78,5 @@ Puppet::Type.newtype(:compellent_map_volume) do
   newparam(:localport) do
     desc "The localport."
   end
-
-  newparam(:user) do
-    desc "User for compellent."
-  end
-  
-  newparam(:password) do
-    desc "Password for compellent."
-  end
-
-  newparam(:host) do
-    desc "IP-address for compellent."
-  end
-  
 end
 

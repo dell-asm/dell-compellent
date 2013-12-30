@@ -12,19 +12,19 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
 	server_serverfolder = @resource[:serverfolder]
 	server_serverfolder = server_serverfolder.strip
     if server_serverfolder.length > 0
-      command = command + " -folder '#{server_serverfolder}'"
+        command = command + " -folder '#{server_serverfolder}'"
     end
 	
 	server_notes = @resource[:notes]
 	server_notes = server_notes.strip
     if server_notes.length > 0
-      command = command + " -notes '#{server_notes}'"
+        command = command + " -notes '#{server_notes}'"
     end
 	
 	server_operatingsystem = @resource[:operatingsystem] 
 	server_operatingsystem = server_operatingsystem.strip
     if server_operatingsystem.length > 0
-	command = command + " -os '#{server_operatingsystem}'"
+		command = command + " -os '#{server_operatingsystem}'"
     end
     return command
   end
@@ -34,7 +34,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     server_serverfolder = @resource[:serverfolder]
     server_serverfolder = server_serverfolder.strip
     if server_serverfolder.length > 0 
-      command = command + " -folder '#{@resource[:serverfolder]}'"
+		command = command + " -folder '#{@resource[:serverfolder]}'"
     end
     return command
   end
@@ -45,7 +45,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Resource name #{server_name}")
     folder_value = @resource[:serverfolder]	
     servercli = create_servercommandline
-   libpath = CommonLib.get_path(1)
+    libpath = CommonLib.get_path(1)
     puts "Server CLI"
     puts servercli
     
@@ -81,10 +81,10 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     parser_obj.parse_exitcode(servercreate_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.info("Successfully created the server '#{server_name}'")
-      else
-      Puppet.info("Unable to create the server '#{server_name}'.")
-      raise Puppet::Error, "#{hash['Error']}"
+		Puppet.info("Successfully created the server '#{server_name}'")
+    else
+		Puppet.info("Unable to create the server '#{server_name}'.")
+        raise Puppet::Error, "#{hash['Error']}"
     end
 
   end
@@ -98,9 +98,9 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     serverdestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/serverDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
     server_folder = @resource[:serverfolder]
     if server_folder.length > 0
-	server_index = self.hash_map['server_Index']
+		server_index = self.hash_map['server_Index']
     else 
-	server_index = self.hash_map['Index'][0]	
+		server_index = self.hash_map['Index'][0]	
     end
     Puppet.debug("server_index : #{server_index}")
     serverdestroycommand = "java -jar -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{serverdestroy_exitcodexml} -c \"server delete -index #{server_index}\""
@@ -110,12 +110,11 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     parser_obj.parse_exitcode(serverdestroy_exitcodexml)
     hash= parser_obj.return_response
     if "#{hash['Success']}".to_str() == "TRUE"
-      Puppet.info("Successfully deleted the server '#{server_name}'.")
-      else
-      Puppet.info("Unable to delete the server '#{server_name}'.")
-      raise Puppet::Error, "#{hash['Error']}"
+		Puppet.info("Successfully deleted the server '#{server_name}'.")
+    else
+		Puppet.info("Unable to delete the server '#{server_name}'.")
+		raise Puppet::Error, "#{hash['Error']}"
     end
-
   end
 
   def exists?
@@ -133,18 +132,17 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     server_index = ""
     if folder_value.length  > 0
 		parser_obj.parse_discovery(servershow_exitcodexml,servershow_responsexml,0)
-	        self.hash_map = parser_obj.return_response
-	        Puppet.debug("folder is not null, hash_map : #{self.hash_map}")
+	    self.hash_map = parser_obj.return_response
+	    Puppet.debug("folder is not null, hash_map : #{self.hash_map}")
 		server_index = self.hash_map['server_Index']
     else
 		self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,@resource[:name])
 		Puppet.debug("folder is null, hash_map : #{self.hash_map}")
 		if self.hash_map['Index'] != nil
-		        server_index = self.hash_map['Index'][0]
+		    server_index = self.hash_map['Index'][0]
 		end
     end    
 
-		
     Puppet.debug("Value = #{@property_hash[:ensure]}")
     if  "#{server_index}" == ""
 		Puppet.info("Server does not exist")
@@ -155,9 +153,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
       Puppet.info("Puppet::Server exist")
       true
     end
-	
   end
-
 end
 
 

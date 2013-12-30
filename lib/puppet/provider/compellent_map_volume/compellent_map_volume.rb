@@ -68,7 +68,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     device_id = get_deviceid
     Puppet.debug("Device Id for Volume - #{device_id}")
     
-    if  #{device_id} != ""
+    if  "#{device_id}".size != 0
         Puppet.debug("appending device ID in command")
         command = command + " -deviceid #{device_id}"
     end
@@ -110,25 +110,30 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     Puppet.debug("Inside create method.")
     libpath = CommonLib.get_path(1)
     resourcename = @resource[:name]
-	servername = @resource[:servername]
+    servername = @resource[:servername]
     map_volume_cli = map_volume_commandline
     Puppet.debug("Map Volume CLI - #{map_volume_cli}")
     Puppet.debug("Map volume with name '#{resourcename}'")
-    mapvolume_exitcodexml = "#{CommonLib.get_log_path(1)}/mapVolumeExitCode_#{CommonLib.get_unique_refid}.xml"
+    device_id = get_deviceid
+    if  "#{device_id}".size != 0
+      mapvolume_exitcodexml = "#{CommonLib.get_log_path(1)}/mapVolumeExitCode_#{CommonLib.get_unique_refid}.xml"
 		
-    map_volume_create_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{mapvolume_exitcodexml} -c \"#{map_volume_cli}\""
-    Puppet.debug(map_volume_create_command)
+      map_volume_create_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{mapvolume_exitcodexml} -c \"#{map_volume_cli}\""
+      Puppet.debug(map_volume_create_command)
 
-    response =  system (map_volume_create_command)
+      response =  system (map_volume_create_command)
 
-    parser_obj=ResponseParser.new('_')
-    parser_obj.parse_exitcode(mapvolume_exitcodexml)
-    hash= parser_obj.return_response
-     if "#{hash['Success']}".to_str() == "TRUE" 
+      parser_obj=ResponseParser.new('_')
+      parser_obj.parse_exitcode(mapvolume_exitcodexml)
+      hash= parser_obj.return_response
+      if "#{hash['Success']}".to_str() == "TRUE" 
         Puppet.info("Successfully mapped volume '#{resourcename}' with the server '#{servername}'.")
-     else
+      else
         raise Puppet::Error, "#{hash['Error']}"
-     end
+      end
+    else
+        Puppet.info("Volume '#{resourcename}' not found to map with server '#{servername}'.")
+    end	
 
   end
 
@@ -160,7 +165,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
  def exists?
     libpath = CommonLib.get_path(1)
     resourcename = @resource[:name]
-	servername = @resource[:servername]
+    servername = @resource[:servername]
     show_server_cli = showserver_commandline
     servershow_exitcodexml = "#{CommonLib.get_log_path(1)}/serverShowExitCode_#{CommonLib.get_unique_refid}.xml"
     servershow_responsexml = "#{CommonLib.get_log_path(1)}/serverShowResponse_#{CommonLib.get_unique_refid}.xml"
@@ -171,21 +176,17 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
 	folder_value = @resource[:serverfolder] 
 	
 	if folder_value.length  > 0
-	    if("#{@resource[:ensure]}" == "absent")
-	  	    # For unmap volume and server in folder case
-		    self.hash_map = parser_obj.retrieve_server_properties(servershow_responsexml)
-		    volume_name = self.hash_map['Volume']
-	    else 
-	            # For map volume and server in folder case 
-        	    parser_obj.parse_discovery(servershow_exitcodexml,servershow_responsexml,0)
-		    self.hash_map = parser_obj.return_response	
-	 	    volume_name = self.hash_map['server_Volume']
-	    end
+	  	# For unmap volume and server in folder case
+		self.hash_map = parser_obj.retrieve_server_properties(servershow_responsexml)
+		volume_name = self.hash_map['Volume']
+        volume_id = self.hash_map['Volume_ID']
+	    Puppet.debug(volume_id)
+        Puppet.debug(volume_name)
 	    Puppet.debug("folder is not null, hash_map - #{self.hash_map}")
     else
 		self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,servername)
 		Puppet.debug("folder is null, hash_map - #{self.hash_map}")
-                volume_name = "#{self.hash_map['Volume']}" 
+        volume_name = "#{self.hash_map['Volume']}" 
 		volume_id = self.hash_map['DeviceId']
     end  
 	

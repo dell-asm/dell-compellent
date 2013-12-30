@@ -5,7 +5,7 @@
 
 define compellent::volume_map_unmap (
   $servername,
-  $ensure        	= 'absent',
+  $ensure        	= 'present',
   $boot			    = false,
   $lun          	= '',
   $volumefolder 	= '',
