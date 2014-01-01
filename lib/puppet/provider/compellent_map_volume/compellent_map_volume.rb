@@ -12,7 +12,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     command = "volume show -name '#{@resource[:name]}'"
     folder_value = @resource[:volumefolder] 
     
-    if folder_value.length  > 0
+    if ((folder_value != nil) && (folder_value.length > 0))
       command = command + " -folder '#{folder_value}'"
     end
     return command
@@ -21,7 +21,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
    def showserver_commandline
     command = "server show -name '#{@resource[:servername]}'"
     folder_value = @resource[:serverfolder] 
-    if folder_value.length > 0
+    if ((folder_value != nil) && (folder_value.length > 0))
       command = command + " -folder '#{folder_value}'"
     end
     return command
@@ -44,7 +44,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
 
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:volumefolder]
-	if folder_value.length  > 0
+	if ((folder_value != nil) && (folder_value.length > 0))
 		parser_obj.parse_discovery(volumeshow_exitcodexml,volumeshow_responsexml,0)
 		hash= parser_obj.return_response 
 	else
@@ -59,12 +59,6 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     command = "volume map -server '#{@resource[:servername]}'"
 	Puppet.debug("hash_map : #{self.hash_map}")
 	folder_value = @resource[:serverfolder]
-	if folder_value.length > 0
-		server_index = self.hash_map['server_Index']
-	else 
-		server_index = self.hash_map['Index'][0]
-	end
-	#command = "volume map -index '#{server_index}'"
     device_id = get_deviceid
     Puppet.debug("Device Id for Volume - #{device_id}")
     
@@ -175,7 +169,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     parser_obj=ResponseParser.new('_')
 	folder_value = @resource[:serverfolder] 
 	
-	if folder_value.length  > 0
+	if ((folder_value != nil) && (folder_value.length > 0))
 	  	# For unmap volume and server in folder case
 		self.hash_map = parser_obj.retrieve_server_properties(servershow_responsexml)
 		volume_name = self.hash_map['Volume']
@@ -203,6 +197,3 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     end
 
 end
-
-
-

@@ -55,7 +55,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     Puppet.debug("in method get_deviceid, after exectuing show volume command")
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:volumefolder]
-    if folder_value.length  > 0
+    if ((folder_value != nil) && (folder_value.length > 0))
 		parser_obj.parse_discovery(volshow_exitcodexml,volshow_respxml,0)
 		hash= parser_obj.return_response 
     else
