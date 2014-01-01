@@ -1,0 +1,4 @@
+DestroyServer1:
+  name: 'Test_Server1'
+  ensure: 'absent'
+  serverfolder: ''
