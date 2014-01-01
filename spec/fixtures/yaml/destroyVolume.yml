@@ -1,0 +1,15 @@
+DestroyVolume1:
+  name: NewVolume1
+  ensure: absent
+
+DestroyVolume2:
+  name: NewVolume2
+  ensure: absent
+
+DestroyVolume3:
+  name: NewVolume3
+  ensure: present
+
+DestroyVolume4:
+  name: NewVolume3
+  ensure: present

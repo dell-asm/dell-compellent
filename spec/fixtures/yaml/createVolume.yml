@@ -1,0 +1,56 @@
+CreateVolume1:
+  name: NewVolume1
+  ensure: present
+  size: '1m'
+  state: 'online'
+  multihostaccess: 'disable'
+  thinprovision: 'enable'
+  snapresv: '20%'
+  thinminreserve: '20%'
+  thingrowthwarn: '30%'
+  thingrowthmax: '40%'
+  thinwarnsoftthres: '50%'
+  thinwarnhardthres: '60%'
+
+
+CreateVolume2:
+  name: NewVolume2
+  ensure: present
+  size: '1m'
+  state: 'online'
+  multihostaccess: 'enable'
+  thinprovision: 'enable'
+  snapresv: '20%'
+  thinminreserve: '20%'
+  thingrowthwarn: '30%'
+  thingrowthmax: '40%'
+  thinwarnsoftthres: '50%'
+  thinwarnhardthres: '60%'
+
+CreateVolume3:
+  name: NewVolume3
+  ensure: present
+  size: '1m'
+  state: 'offline'
+  multihostaccess: 'disable'
+  thinprovision: 'enable'
+  snapresv: '20%'
+  thinminreserve: '20%'
+  thingrowthwarn: '30%'
+  thingrowthmax: '40%'
+  thinwarnsoftthres: '50%'
+  thinwarnhardthres: '60%'
+
+CreateVolume4:
+  name: NewVolume3
+  ensure: present
+  size: '1m'
+  state: 'offline'
+  multihostaccess: 'enable'
+  thinprovision: 'enable'
+  snapresv: '20%'
+  thinminreserve: '20%'
+  thingrowthwarn: '30%'
+  thingrowthmax: '40%'
+  thinwarnsoftthres: '50%'
+  thinwarnhardthres: '60%'

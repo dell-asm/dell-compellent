@@ -1,0 +1,4 @@
+RemoveHBA1:
+  name: 'Test_Server'
+  ensure: 'absent'
+  wwn: '21000024FF46613F'
