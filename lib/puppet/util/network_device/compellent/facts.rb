@@ -65,6 +65,7 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     self.facts["server_data"]=JSON.pretty_generate(XmlSimple.xml_in(server_respxml))
     self.facts["replayprofile_data"]=JSON.pretty_generate(XmlSimple.xml_in(replayprofile_respxml))
     self.facts["storageprofile_data"]=JSON.pretty_generate(XmlSimple.xml_in(storageprofile_respxml))
+    self.facts["model"]="Compellent"
 
     
     @facts
