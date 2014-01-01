@@ -2,14 +2,13 @@
 
 require 'spec_helper'
 require 'yaml'
-require 'puppet/provider/comellent'
-require 'puppet/util/network_device/compellent/device'
+
 
 describe Puppet::Type.type(:compellent_map_volume).provider(:compellent_map_volume) do
 
   device_conf =  YAML.load_file(my_fixture('device_conf.yml'))
   before :each do
-    Facter.expects(:value).with(:url).twice.returns(device_conf['url'])
+    Facter.stubs(:value).with(:url).returns(device_conf['url'])
     described_class.stubs(:suitable?).returns true
     Puppet::Type.type(:compellent_map_volume).stubs(:defaultprovider).returns described_class
   end
@@ -39,8 +38,8 @@ describe Puppet::Type.type(:compellent_map_volume).provider(:compellent_map_volu
   
   let :unmap_volume do
     Puppet::Type.type(:compellent_map_volume).new(
-		:name          		=> destroy_node1['name'],
-		:ensure        		=> destroy_node1['ensure'],
+		:name          		=> unmap_node1['name'],
+		:ensure        		=> unmap_node1['ensure'],
     )
   end
 
@@ -48,19 +47,12 @@ describe Puppet::Type.type(:compellent_map_volume).provider(:compellent_map_volu
   let :provider do
     described_class.new( )
   end
-
+  
   describe "when asking exists?" do
-    it "should return true if volume is already mapped" do
-      map_volume.provider.set(:ensure => :present)
-      map_volume.provider.should be_exists
-    end
-
     it "should return false if volume is not mapped" do
-      unmap_volume.provider.set(:ensure => :absent)
-      unmap_volume.provider.should_not be_exists
+      map_volume.provider.should_not be_exists
     end
   end
-
 
   describe "when mapping a volume" do
     it "should be able to map a volume" do

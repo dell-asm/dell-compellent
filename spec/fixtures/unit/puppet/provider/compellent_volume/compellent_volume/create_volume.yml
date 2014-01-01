@@ -1,0 +1,12 @@
+CreateVolume1:
+  name: Test_Volume_spec
+  ensure: present
+  purge: 'yes'  
+  size: '2g'
+  boot: false
+  volumefolder: ''
+  notes: 'Test Space Notes'
+  replayprofile: 'Sample'
+  storageprofile: 'Low Priority'
+ 
+

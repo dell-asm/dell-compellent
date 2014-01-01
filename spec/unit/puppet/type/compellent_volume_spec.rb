@@ -2,21 +2,19 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:compellent_map_volume) do
+describe Puppet::Type.type(:compellent_volume) do
 
   let :resource do
     described_class.new(
-          :name          		=> 'Test_Volume_Test',
+          :name          		=> 'Test_Volume_spec',
 	  :ensure        		=> 'present',
-	  :boot				=> :true,
+	  :boot				=> :false,
 	  :volumefolder 		=> :'',
-	  :serverfolder			=> :'',
-	  :servername		        => :'Test_Server',
-	  :lun          		=> '',
-	  :localport		        => '',
-	  :force		        => true,
-	  :singlepath           	=> true,
-	  :readonly             	=> true
+	  :purge			=> :'yes',
+	  :size		                => :'2g',
+	  :notes          		=> 'Test Space Notes',
+	  :replayprofile		=> 'Sample',
+	  :storageprofile		=> 'Low Priority'
     )
   end
 
@@ -39,21 +37,21 @@ describe Puppet::Type.type(:compellent_map_volume) do
   
     describe "for name" do
       it "should allow a valid mapping name where ensure is present" do
-        described_class.new(:name => 'Test_Volume_Test', :ensure => 'present')[:name].should == 'Test_Volume_Test'
+        described_class.new(:name => 'Test_Volume_spec', :ensure => 'present')[:name].should == 'Test_Volume_Test'
       end
 
       it "should allow a valid mapping name where ensure is absent" do
-        described_class.new(:name => 'Test_Volume_Test', :ensure => 'absent')[:name].should == 'Test_Volume_Test'
+        described_class.new(:name => 'Test_Volume_spec', :ensure => 'absent')[:name].should == 'Test_Volume_Test'
       end
     end
 
     describe "for ensure" do
       it "should allow present" do
-        described_class.new(:name => 'Test_Volume_Test', :ensure => 'present')[:ensure].should == :present
+        described_class.new(:name => 'Test_Volume_spec', :ensure => 'present')[:ensure].should == :present
       end
 
       it "should allow absent" do
-        described_class.new(:name => 'Test_Volume_Test', :ensure => 'absent')[:ensure].should == :absent
+        described_class.new(:name => 'Test_Volume_spec', :ensure => 'absent')[:ensure].should == :absent
       end
 
       it "should not allow something else" do

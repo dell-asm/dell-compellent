@@ -1,0 +1,3 @@
+DeleteVolume1:
+  name: Test_Volume_spec
+  ensure: absent
