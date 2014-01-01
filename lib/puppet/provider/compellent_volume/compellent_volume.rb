@@ -119,7 +119,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     resourcename = @resource[:name]
     device_id = get_deviceid
     voldestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/volDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
-    if  #{device_id} != ""
+    if  "#{device_id}".size != 0
 		Puppet.debug("Invoking destroy command")
 		if (@resource[:purge] == "yes")
 			volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{voldestroy_exitcodexml} -c \"volume delete -deviceid #{device_id} -purge\""
