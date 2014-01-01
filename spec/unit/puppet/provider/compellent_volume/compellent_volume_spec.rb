@@ -39,7 +39,12 @@ describe Puppet::Type.type(:compellent_volume).provider(:compellent_volume) do
   let :delete_volume do
     Puppet::Type.type(:compellent_volume).new(
 		:name          		=> delete_node['name'],
-		:ensure        		=> delete_node['ensure']
+		:ensure        		=> delete_node['ensure'],
+		:purge			=> delete_node['purge'],
+		:volumefolder		=> delete_node['volumefolder'],
+		:notes 		        => delete_node['notes'],
+		:replayprofile		=> delete_node['replayprofile'],
+		:storageprofile		=> delete_node['storageprofile']
     )
   end 
   

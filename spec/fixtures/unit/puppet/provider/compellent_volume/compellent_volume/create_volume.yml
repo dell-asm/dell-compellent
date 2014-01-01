@@ -1,5 +1,5 @@
 CreateVolume1:
-  name: Test_Volume_spec
+  name: Test_Volume_spec_1
   ensure: present
   purge: 'yes'  
   size: '2g'
