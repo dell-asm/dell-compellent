@@ -9,9 +9,9 @@ module CommonLib
     $num = num
     path = Pathname.new(temp_path)
     while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
+		path = Pathname.new(temp_path)
+		temp_path = path.dirname
+		$i +=1
     end
     temp_path = temp_path.join('logs')
     Puppet.debug("Log Path #{temp_path}")
@@ -32,13 +32,12 @@ module CommonLib
     $num = num
     path = Pathname.new(temp_path)
     while $i < $num  do
-      path = Pathname.new(temp_path)
-      temp_path = path.dirname
-      $i +=1
+		path = Pathname.new(temp_path)
+		temp_path = path.dirname
+		$i +=1
     end
     temp_path = temp_path.join('lib/CompCU-6.3.jar')
     Puppet.debug("Path #{temp_path}")
     return  temp_path
   end
-
 end

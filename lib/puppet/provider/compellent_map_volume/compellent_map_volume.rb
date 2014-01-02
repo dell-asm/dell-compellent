@@ -137,7 +137,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     resourcename = @resource[:name]
     device_id = get_deviceid
     Puppet.debug("Device Id for Volume - #{device_id}")    
-    if  #{device_id} != "" 
+    if  "#{device_id}".size != 0 
         Puppet.debug("Invoking destroy command")
 		unmapvolume_exitcodexml = "#{CommonLib.get_log_path(1)}/unmapVolumeExitCode_#{CommonLib.get_unique_refid}.xml"
         unmap_volume_destroy_command = "java -jar #{libpath} -host #{transport.host} -user #{transport.user} -password #{transport.password} -xmloutputfile #{unmapvolume_exitcodexml} -c \"volume unmap -deviceid #{device_id}\""

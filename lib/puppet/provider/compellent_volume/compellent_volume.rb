@@ -68,13 +68,11 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
 
 
   def create
-
     Puppet.debug("Inside Create Method.")
     libpath = CommonLib.get_path(1)
     folder_value = @resource[:volumefolder]
     resourcename = @resource[:name]
     volume_cli = createvolume_commandline
-
     volfolder_exitcodexml = "#{CommonLib.get_log_path(1)}/volFolderCreateExitCode_#{CommonLib.get_unique_refid}.xml"
 
     if "#{folder_value}".size != 0

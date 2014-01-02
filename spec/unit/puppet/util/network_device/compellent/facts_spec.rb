@@ -9,7 +9,7 @@ require 'puppet/util/network_device/transport_compellent'
 
 describe Puppet::Util::NetworkDevice::Compellent::Facts do
 
-  device_conf =  YAML.load_file(my_deviceurl('equallogic','device_conf.yml'))
+  device_conf =  YAML.load_file(my_fixture('device_conf.yml'))
   let :transport do
     Puppet::Util::NetworkDevice::Transport_compellent.new()
   end
