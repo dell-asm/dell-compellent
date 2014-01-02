@@ -3,10 +3,8 @@ require 'puppet/util/network_device/transport_compellent'
 require 'rexml/document'
 require 'puppet/lib/ResponseParser'
 require 'puppet/lib/CommonLib'
-
 require 'json'
 require 'xmlsimple'
-
 
 include REXML
 
@@ -20,8 +18,6 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     @seperator="_"
     @transport = transport
   end
-
-
 
   def retrieve
     libpath = CommonLib.get_path(1)
@@ -42,15 +38,14 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     replayprofile_exitcodexml = "#{CommonLib.get_log_path(1)}/replayprofileExitCode_#{CommonLib.get_unique_refid}.xml"
     storageprofile_respxml = "#{CommonLib.get_log_path(1)}/storageprofileResp_#{CommonLib.get_unique_refid}.xml"
     storageprofile_exitcodexml = "#{CommonLib.get_log_path(1)}/storageprofileExitCode_#{CommonLib.get_unique_refid}.xml"
-    
-    
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{system_exitcodexml} -c \"system show -xml #{system_respxml}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{ctrl_exitcodexml} -c \"controller show -xml #{ctrl_respxml}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{diskfolder_exitcodexml} -c \"diskfolder show -xml #{diskfolder_respxml}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{volume_exitcodexml} -c \"volume show -xml #{volume_respxml}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{server_exitcodexml} -c \"server show -xml #{server_respxml}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{replayprofile_exitcodexml} -c \"replayprofile show -xml #{replayprofile_respxml}\" ")
-    response = system("java -jar #{libpath} -host #{@transport.host} -user #{@transport.user} -password #{@transport.password} -xmloutputfile #{storageprofile_exitcodexml} -c \"storageprofile show -xml #{storageprofile_respxml}\" ")
+
+    @transport.command_exec("#{libpath}","#{system_exitcodexml}","\"system show -xml #{system_respxml}\"")
+    @transport.command_exec("#{libpath}","#{ctrl_exitcodexml}","\"controller show -xml #{ctrl_respxml}\"")
+    @transport.command_exec("#{libpath}","#{diskfolder_exitcodexml}","\"diskfolder show -xml #{diskfolder_respxml}\"")
+    @transport.command_exec("#{libpath}","#{volume_exitcodexml}","\"volume show -xml #{volume_respxml}\"")
+    @transport.command_exec("#{libpath}","#{server_exitcodexml}","\"server show -xml #{server_respxml}\"")
+    @transport.command_exec("#{libpath}","#{replayprofile_exitcodexml}","\"replayprofile show -xml #{replayprofile_respxml}\"")
+    @transport.command_exec("#{libpath}","#{storageprofile_exitcodexml}","\"storageprofile show -xml #{storageprofile_respxml}\"")
 
     Puppet.debug("Creating Parser Object")
     parser_obj=ResponseParser.new('_')
@@ -67,7 +62,6 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     self.facts["storageprofile_data"]=JSON.pretty_generate(XmlSimple.xml_in(storageprofile_respxml))
     self.facts["model"]="Compellent"
 
-    
     @facts
   end
 
