@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:compellent_hba_add_delete) do
+describe Puppet::Type.type(:compellent_create_delete_server) do
 
   let :resource do
     described_class.new(
