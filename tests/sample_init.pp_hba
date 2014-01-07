@@ -1,0 +1,24 @@
+# Class: compellent
+#
+# This module manages compellent
+#
+# Parameters:
+#
+# Actions:
+#
+# Requires:
+#
+# Sample Usage:
+#
+# [Remember: No empty lines between comments and class definition]
+
+class compellent{
+  compellent::hba_add_delete { 'Test_Server':
+  ensure        	=> 'absent',
+  serverfolder 		=> '',
+  porttype 		    => 'FiberChannel',  
+  wwn		        => '21000024FF4ABF6C',
+  manual  		    => true,
+   }
+}
+
