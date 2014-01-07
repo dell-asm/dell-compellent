@@ -6,7 +6,7 @@ define compellent::server_create_destroy (
   $notes 		        = 'Test Server',
   
 ) {
-  compellent_server { "${name}":
+  compellent_server { "$name":
   ensure       	 	 => $ensure,
   operatingsystem	 => $operatingsystem,
   serverfolder       => $serverfolder,

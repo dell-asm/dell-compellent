@@ -43,7 +43,7 @@ define compellent::hba_add_delete (
   $manual		    =  false,  
   
 ) {
-  compellent_hba_add_delete { "${name}":
+  compellent_hba_add_delete { "$name":
   ensure       	 	 => $ensure,
   porttype		     => $porttype,
   wwn	          	 => $wwn,

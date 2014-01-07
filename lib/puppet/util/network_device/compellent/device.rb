@@ -31,6 +31,8 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     login_respxml = "#{CommonLib.get_log_path(1)}/loginResp_#{CommonLib.get_unique_refid}.xml"
     response = @transport.exec("system show -xml #{login_respxml}")
     hash = response[:xml_output_hash]
+    response_output = response[:xml_output_file]   
+    File.delete(login_respxml,response_output) 	
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.debug("Login successful..")
     else

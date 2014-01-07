@@ -65,6 +65,7 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(add_server_hba_exitcodexml)
     hash= parser_obj.return_response
+    File.delete(add_server_hba_exitcodexml)
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Successfully added HBA to the server '#{resourcename}'.")
     else
@@ -83,6 +84,7 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(remove_server_hba_exitcodexml)
     hash= parser_obj.return_response
+    File.delete(remove_server_hba_exitcodexml)
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Successfully deleted the HBA from the server '#{resourcename}'.")
     else
@@ -139,16 +141,9 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:serverfolder]
     if folder_value.length  > 0
-      if("#{@resource[:ensure]}" == "absent")
         self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
-        wwn_list = self.hash_map['WWN_List']
-      else
-        #parser_obj.parse_discovery(server_hba_show_exitcode_xml,server_hba_show_response_xml,0)
-        self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
-        #self.hash_map = parser_obj.return_response
         Puppet.debug("self.hash_map ::::::::::::::::::::: #{self.hash_map}")
         wwn_list = self.hash_map['WWN_List']
-      end
       Puppet.debug("folder is not null : #{self.hash_map}")
     else
       self.hash_map = parser_obj.retrieve_empty_folder_server_properties(server_hba_show_response_xml,resourcename)
@@ -159,6 +154,7 @@ Puppet::Type.type(:compellent_hba_add_delete).provide(:compellent_hba_add_delete
     find_wwn_list(wwn_list)
     Puppet.debug(@resource[:wwn])
     Puppet.debug("valid_wwn after soring the valid wwn : #{self.valid_wwn}")
+    File.delete(server_hba_show_exitcode_xml,server_hba_show_response_xml)
     if (self.valid_wwn.length > 0)
       if("#{@resource[:ensure]}" == "absent")
         true

@@ -26,10 +26,9 @@ Puppet::Type.newtype(:compellent_volume) do
   end
   
   newparam(:boot, :boolean => true) do
-    desc "The aggregate this volume should be created in." 
-    desc "Should volume size auto-increment be enabled? Defaults to `:true`."
+    desc "The parameter specifies the boot option for volume." 
     newvalues(:true, :false)
-    defaultto :true
+    defaultto :false
   end
   
   newparam(:volumefolder) do

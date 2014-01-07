@@ -57,6 +57,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
       parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(server_folder_exitcodexml)
       hash= parser_obj.return_response
+	  File.delete(server_folder_exitcodexml)
       if "#{hash['Success']}".to_str() == "TRUE"
         Puppet.info("Successfully created the server folder '#{folder_value}'.")
       else
@@ -74,6 +75,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(servercreate_exitcodexml)
     hash= parser_obj.return_response
+	File.delete(servercreate_exitcodexml)
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Successfully created the server '#{server_name}'")
     else
@@ -101,6 +103,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(serverdestroy_exitcodexml)
     hash= parser_obj.return_response
+	File.delete(serverdestroy_exitcodexml)
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Successfully deleted the server '#{server_name}'.")
     else
@@ -134,6 +137,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     end
 
     Puppet.debug("Value = #{@property_hash[:ensure]}")
+	File.delete(servershow_exitcodexml,servershow_responsexml)
     if  "#{server_index}" == ""
       Puppet.info("Server does not exist")
       false

@@ -46,6 +46,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
     else
       hash = parser_obj.retrieve_empty_folder_volume_properties(volumeshow_responsexml,@resource[:name])
     end
+	File.delete(volumeshow_exitcodexml,volumeshow_responsexml)
     device_id = "#{hash['volume_DeviceID']}"
 
     return device_id
@@ -110,7 +111,8 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
       transport.command_exec("#{libpath}","#{mapvolume_exitcodexml}","\"#{map_volume_cli}\"")
       parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(mapvolume_exitcodexml)
-      hash= parser_obj.return_response
+	  hash= parser_obj.return_response
+	  File.delete(mapvolume_exitcodexml)
       if "#{hash['Success']}".to_str() == "TRUE"
         Puppet.info("Successfully mapped volume '#{resourcename}' with the server '#{servername}'.")
       else
@@ -135,6 +137,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
       parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(unmapvolume_exitcodexml)
       hash= parser_obj.return_response
+	  File.delete(unmapvolume_exitcodexml)
       if "#{hash['Success']}".to_str() == "TRUE"
         Puppet.info("Successfully unmapped volume '#{resourcename}' with the server.")
       else
@@ -172,6 +175,7 @@ Puppet::Type.type(:compellent_map_volume).provide(:compellent_map_volume, :paren
 
     Puppet.debug(" volume_name : #{volume_name}")
     device_id = get_deviceid
+	File.delete(servershow_exitcodexml,servershow_responsexml)
     if ((volume_id != nil) && (volume_id.include? device_id))
       Puppet.debug("Volume '#{resourcename}' mapped with server '#{servername}'")
       true

@@ -37,8 +37,5 @@ Puppet::Type.newtype(:compellent_hba_add_delete) do
     newvalues(:true, :false)
     defaultto :false
   end 
- 
-  
-  
-    
+     
 end

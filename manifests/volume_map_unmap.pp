@@ -16,7 +16,7 @@ define compellent::volume_map_unmap (
   $singlepath		= false, 
   
 ) {
-  compellent_map_volume { "${name}":
+  compellent_map_volume { "$name":
   ensure       	 	 => $ensure,
   boot		     	 => $boot,
   servername		 => $servername,   

@@ -22,8 +22,9 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
   def retrieve
     libpath = CommonLib.get_path(1)
     Puppet.debug("In facts retrieve")
-    Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user} Password is #{@transport.password}")
-
+    #Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user} Password is #{@transport.password}")
+    Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user}") 
+	
     system_respxml = "#{CommonLib.get_log_path(1)}/systemResp_#{CommonLib.get_unique_refid}.xml"
     system_exitcodexml = "#{CommonLib.get_log_path(1)}/systemExitCode_#{CommonLib.get_unique_refid}.xml"
     ctrl_respxml = "#{CommonLib.get_log_path(1)}/ctrlResp_#{CommonLib.get_unique_refid}.xml"
@@ -62,6 +63,7 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     self.facts["storageprofile_data"]=JSON.pretty_generate(XmlSimple.xml_in(storageprofile_respxml))
     self.facts["model"]="Compellent"
 
+    File.delete(system_exitcodexml,system_respxml,ctrl_exitcodexml,ctrl_respxml,diskfolder_exitcodexml,diskfolder_respxml,volume_respxml,volume_exitcodexml,server_respxml,server_exitcodexml,replayprofile_respxml,replayprofile_exitcodexml,storageprofile_respxml,storageprofile_exitcodexml)
     @facts
   end
 

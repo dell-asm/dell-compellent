@@ -15,7 +15,7 @@ define compellent::volume_create_destroy (
         $storageprofile	= 'Low Priority',
 
         ) {
-    compellent_volume { "${name}":
+    compellent_volume { "$name":
         ensure       	 => $ensure,
         size     	 	 => $size,
         boot		     => $boot,  
