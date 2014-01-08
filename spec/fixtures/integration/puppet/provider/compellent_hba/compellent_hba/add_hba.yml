@@ -1,0 +1,7 @@
+AddHBA1:
+  name: 'Test_Server1'
+  ensure: 'present'
+  wwn: '21000024FF46613F' 
+  serverfolder: ''
+  porttype: 'FiberChannel'
+  manual: true

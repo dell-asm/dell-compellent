@@ -5,8 +5,8 @@ require 'puppet/util/network_device/compellent/facts'
 require 'puppet/util/network_device/transport_compellent'
 require 'uri'
 require 'net/https'
-require 'puppet/lib/ResponseParser'
-require 'puppet/lib/CommonLib'
+require 'puppet/files/ResponseParser'
+require 'puppet/files/CommonLib'
 
 class Puppet::Util::NetworkDevice::Compellent::Device
 
@@ -41,7 +41,7 @@ class Puppet::Util::NetworkDevice::Compellent::Device
   end
 
   def facts
-    Puppet.debug("In facts")
+    Puppet.debug("In facts call")
     @facts ||= Puppet::Util::NetworkDevice::Compellent::Facts.new(@transport)
     facts = @facts.retrieve
 

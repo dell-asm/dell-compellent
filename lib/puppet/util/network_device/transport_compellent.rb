@@ -1,8 +1,8 @@
 # Class - initialize variable used for device connection
 
 require 'net/https'
-require 'puppet/lib/CommonLib'
-require 'puppet/lib/ResponseParser'
+require 'puppet/files/CommonLib'
+require 'puppet/files/ResponseParser'
 require 'puppet/util/network_device'
 
 class Puppet::Util::NetworkDevice::Transport_compellent

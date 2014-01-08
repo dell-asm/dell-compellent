@@ -1,8 +1,8 @@
 require 'puppet/util/network_device/compellent'
 require 'puppet/util/network_device/transport_compellent'
 require 'rexml/document'
-require 'puppet/lib/ResponseParser'
-require 'puppet/lib/CommonLib'
+require 'puppet/files/ResponseParser'
+require 'puppet/files/CommonLib'
 require 'json'
 require 'xmlsimple'
 

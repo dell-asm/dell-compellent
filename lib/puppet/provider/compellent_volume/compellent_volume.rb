@@ -1,6 +1,6 @@
 require 'puppet/provider/compellent'
-require 'puppet/lib/ResponseParser'
-require 'puppet/lib/CommonLib'
+require 'puppet/files/ResponseParser'
+require 'puppet/files/CommonLib'
 
 Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Volume creation, modification and deletion."

@@ -1,6 +1,6 @@
 require 'puppet/provider/compellent'
-require 'puppet/lib/ResponseParser'
-require 'puppet/lib/CommonLib'
+require 'puppet/files/ResponseParser'
+require 'puppet/files/CommonLib'
 
 Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Puppet::Provider::Compellent) do
   @doc = "Manage Compellent Server creation and deletion."
@@ -113,7 +113,8 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
   end
 
   def exists?
-    Puppet.debug("Puppet::Provider::Compellenet_server: checking existance of compellent server #{@resource[:name]}")
+    server_name = @resource[:name]
+    Puppet.debug("Puppet::Provider::Compellenet_server: checking existance of compellent server #{server_name}")
     Puppet.debug(" resource[:ensure]  ==  #{@resource[:ensure]}")
     libpath = CommonLib.get_path(1)
     servershowcli = showserver_commandline
@@ -126,11 +127,11 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     if folder_value.length  > 0
       parser_obj.parse_discovery(servershow_exitcodexml,servershow_responsexml,0)
       self.hash_map = parser_obj.return_response
-      Puppet.debug("folder is not null, hash_map : #{self.hash_map}")
+      Puppet.debug("Server folder is not null, hash_map : #{self.hash_map}")
       server_index = self.hash_map['server_Index']
     else
-      self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,@resource[:name])
-      Puppet.debug("folder is null, hash_map : #{self.hash_map}")
+      self.hash_map = parser_obj.retrieve_empty_folder_server_properties(servershow_responsexml,server_name)
+      Puppet.debug("Server folder is null, hash_map : #{self.hash_map}")
       if self.hash_map['Index'] != nil
         server_index = self.hash_map['Index'][0]
       end
@@ -144,7 +145,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     else
       #Server exist, can delete!
       #@property_hash[:ensure] = :absent
-      Puppet.info("Puppet::Server exist")
+      Puppet.info("Puppet::Server #{server_name} exist")
       true
     end
   end
