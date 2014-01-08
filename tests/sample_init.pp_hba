@@ -13,7 +13,7 @@
 # [Remember: No empty lines between comments and class definition]
 
 class compellent{
-  compellent::hba_add_delete { 'Test_Server':
+  compellent::hba { 'Test_Server':
   ensure        	=> 'absent',
   serverfolder 		=> '',
   porttype 		    => 'FiberChannel',  

@@ -13,7 +13,7 @@
 # [Remember: No empty lines between comments and class definition]
 
 class compellent{
- compellent::volume_map_unmap { 'Test_Volume_Test':
+ compellent::volume_map { 'Test_Volume_Test':
   ensure        	=> 'present',
   boot				=> true,  
   volumefolder      => '',

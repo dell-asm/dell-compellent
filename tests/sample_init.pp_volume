@@ -13,7 +13,7 @@
 # [Remember: No empty lines between comments and class definition]
 
 class compellent{
-    compellent::volume_create_destroy { 'Test_Volume':
+    compellent::volume { 'Test_Volume':
         purge             => 'yes',
         size 		      => '2g',
         ensure        	  => 'absent',

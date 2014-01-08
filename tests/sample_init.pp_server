@@ -12,7 +12,7 @@
 #
 # [Remember: No empty lines between comments and class definition]
 class compellent{
-  compellent::server_create_destroy { 'Test_Server':
+  compellent::server { 'Test_Server':
   operatingsystem	=> 'Windows 2012',
   ensure        	=> 'present',
   serverfolder 		=> '',
