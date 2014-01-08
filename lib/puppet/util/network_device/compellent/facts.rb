@@ -23,8 +23,8 @@ class Puppet::Util::NetworkDevice::Compellent::Facts
     libpath = CommonLib.get_path(1)
     Puppet.debug("In facts retrieve")
     #Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user} Password is #{@transport.password}")
-    Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user}") 
-	
+    Puppet.debug("IP Address is #{@transport.host} Username is #{@transport.user}")
+
     system_respxml = "#{CommonLib.get_log_path(1)}/systemResp_#{CommonLib.get_unique_refid}.xml"
     system_exitcodexml = "#{CommonLib.get_log_path(1)}/systemExitCode_#{CommonLib.get_unique_refid}.xml"
     ctrl_respxml = "#{CommonLib.get_log_path(1)}/ctrlResp_#{CommonLib.get_unique_refid}.xml"

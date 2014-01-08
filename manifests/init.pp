@@ -11,6 +11,6 @@
 # Sample Usage:
 #
 # [Remember: No empty lines between comments and class definition]
-class compellent{
+class compellent {
 }
 

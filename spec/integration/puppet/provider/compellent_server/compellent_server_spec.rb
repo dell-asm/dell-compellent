@@ -21,12 +21,12 @@ describe Puppet::Type.type(:compellent_server).provider(:compellent_server) do
   create_node = create_server_yml['CreateServer1']
   let :create_server do
     Puppet::Type.type(:compellent_server).new(
-                :name                   => create_node['name'],
-                :ensure                 => create_node['ensure'],
-                :wwn                    => create_node['wwn'],
-                :serverfolder           => create_node['serverfolder'],
-                :notes                  => create_node['notes'],
-                :operatingsystem        => create_node['operatingsystem'],
+    :name                   => create_node['name'],
+    :ensure                 => create_node['ensure'],
+    :wwn                    => create_node['wwn'],
+    :serverfolder           => create_node['serverfolder'],
+    :notes                  => create_node['notes'],
+    :operatingsystem        => create_node['operatingsystem']
     )
   end
 
@@ -36,12 +36,12 @@ describe Puppet::Type.type(:compellent_server).provider(:compellent_server) do
   remove_node = destroy_server_yml['DestroyServer1']
   let :destroy_server do
     Puppet::Type.type(:compellent_server).new(
-                :name                   => remove_node['name'],
-                :serverfolder           => remove_node['serverfolder'],
-                :ensure                 => remove_node['ensure']
+    :name                   => remove_node['name'],
+    :serverfolder           => remove_node['serverfolder'],
+    :ensure                 => remove_node['ensure']
     )
   end
-  
+
   #Load the provider
   let :provider do
     described_class.new( )

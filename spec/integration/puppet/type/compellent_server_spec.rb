@@ -6,12 +6,12 @@ describe Puppet::Type.type(:compellent_server) do
 
   let :resource do
     described_class.new(
-    :name          	=> 'Test_Server1',
-    :ensure        	=> 'present',
-    :serverfolder	=> 'sereverfolder',
-    :wwn		=> 'WWN',
-    :operatingsystem    => 'operatingsystem',
-    :notes    => 'notes',
+    :name          	  => 'Test_Server1',
+    :ensure        	  => 'present',
+    :serverfolder	    => 'sereverfolder',
+    :wwn		          => 'WWN',
+    :operatingsystem  => 'operatingsystem',
+    :notes            => 'notes'
     )
   end
 
@@ -37,7 +37,7 @@ describe Puppet::Type.type(:compellent_server) do
       end
     end
 
-  describe "for ensure" do
+    describe "for ensure" do
       it "should allow present" do
         described_class.new(:name => 'Test_HBA_Test', :ensure => 'present')[:ensure].should == :present
       end
@@ -50,8 +50,8 @@ describe Puppet::Type.type(:compellent_server) do
         expect { described_class.new(:name => 'Test_HBA_Test', :ensure => 'foo') }.to raise_error Puppet::Error, /Invalid value/
       end
     end
-	
-	 describe "for wwn" do
+
+    describe "for wwn" do
       it "should allow a valid mapping name where ensure is present" do
         described_class.new(:name => 'Test_HBA_Test', :ensure => 'present',:wwn=>'WWN')[:wwn].should == 'WWN'
       end
@@ -60,6 +60,6 @@ describe Puppet::Type.type(:compellent_server) do
         described_class.new(:name => 'Test_HBA_Test', :ensure => 'absent',:wwn=>'WWN')[:wwn].should == 'WWN'
       end
     end
-	
-  end	
+
+  end
 end

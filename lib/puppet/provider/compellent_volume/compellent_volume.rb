@@ -58,7 +58,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     else
       hash = parser_obj.retrieve_empty_folder_volume_properties(volshow_respxml,@resource[:name])
     end
-	File.delete(volshow_respxml,volshow_exitcodexml)
+    File.delete(volshow_respxml,volshow_exitcodexml)
     device_id = "#{hash['volume_DeviceID']}"
     return device_id
   end
@@ -78,7 +78,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
       parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(volfolder_exitcodexml)
       hash= parser_obj.return_response
-	  File.delete(volfolder_exitcodexml)
+      File.delete(volfolder_exitcodexml)
       if "#{hash['Success']}".to_str() == "TRUE"
         Puppet.info("Successfully created the volume folder '#{folder_value}'.")
       else
@@ -97,7 +97,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(volcreate_exitcodexml)
     hash= parser_obj.return_response
-	File.delete(volcreate_exitcodexml)
+    File.delete(volcreate_exitcodexml)
     if "#{hash['Success']}".to_str() == "TRUE"
       Puppet.info("Successfully created the volume '#{resourcename}'.")
     else
@@ -112,22 +112,22 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     device_id = get_deviceid
     if  "#{device_id}".size != 0
       Puppet.debug("Invoking destroy command")
-	  voldestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/volDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
+      voldestroy_exitcodexml = "#{CommonLib.get_log_path(1)}/volDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
       if (@resource[:purge] == "yes")
         transport.command_exec("#{libpath}","#{voldestroy_exitcodexml}","\"volume delete -deviceid #{device_id} -purge\"")
       else
         transport.command_exec("#{libpath}","#{voldestroy_exitcodexml}","\"volume delete -deviceid #{device_id}\"")
       end
-	  parser_obj=ResponseParser.new('_')
+      parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(voldestroy_exitcodexml)
       hash= parser_obj.return_response
-	  File.delete(voldestroy_exitcodexml)
-	  if "#{hash['Success']}".to_str() == "TRUE"
-		Puppet.info("Successfully deleted the volume '#{resourcename}'.")
-	  else
-		raise Puppet::Error, "#{hash['Error']}"
-	  end
-    end		
+      File.delete(voldestroy_exitcodexml)
+      if "#{hash['Success']}".to_str() == "TRUE"
+        Puppet.info("Successfully deleted the volume '#{resourcename}'.")
+      else
+        raise Puppet::Error, "#{hash['Error']}"
+      end
+    end
   end
 
   def exists?
@@ -144,5 +144,4 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     end
   end
 end
-
 

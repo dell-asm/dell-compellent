@@ -7,9 +7,9 @@ require 'spec_helper'
 require 'yaml'
 
 describe "Module Test Of Puppet::Util::NetworkDevice::Compellent" do
-  
+
   context "context1" do
-  
+
     let(:dummy_class) do
       Class.new do
         include Puppet::Util::NetworkDevice::Compellent
@@ -31,7 +31,7 @@ describe "Module Test Of Puppet::Util::NetworkDevice::Compellent" do
       it { defined?(DummyClass).should be_nil }
       its (:name) { should eq("DummyClass") }
     end
-	
+
   end
 
   context "context2" do
@@ -43,5 +43,5 @@ describe "Module Test Of Puppet::Util::NetworkDevice::Compellent" do
   it "should not be possible to access let methods from a child context" do
     defined?(dummy_class).should be_nil
   end
-  
+
 end

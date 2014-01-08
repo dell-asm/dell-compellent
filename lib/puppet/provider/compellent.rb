@@ -6,7 +6,6 @@ require 'puppet/util/network_device/compellent/device'
 class Puppet::Provider::Compellent < Puppet::Provider
 
   attr_accessor :device
-
   def self.transport
     if Facter.value(:url) then
       Puppet.debug "Puppet::Util::NetworkDevice::Compellent: connecting via facter url."
@@ -24,7 +23,7 @@ class Puppet::Provider::Compellent < Puppet::Provider
     self.class.transport
   end
 
-  # Helper function for simplifying the execution of Compellent API commands, in a similar fashion to the commands function. 
+  # Helper function for simplifying the execution of Compellent API commands, in a similar fashion to the commands function.
   # Arguments should be a hash of 'command name' => 'api command'.
   def self.compellent_commands(command_specs)
     command_specs.each do |name, apicommand|

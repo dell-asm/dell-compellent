@@ -15,27 +15,27 @@ describe Puppet::Util::NetworkDevice::Compellent::Device do
     it "should reject a single hostname" do
       deviceobj = mock 'compellent server'
       response = described_class.new('pfiler.example.com')
-	  expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
+      expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
     end
 
     it "should reject a missing username" do
       deviceobj = mock 'compellent server'
       deviceobj = described_class.new('https://pfiler.example.com')
-	  expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
+      expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
     end
 
     it "should reject a missing password" do
       deviceobj = mock 'compellent server'
       deviceobj = described_class.new('https://root@pfiler.example.com')
-	  expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
+      expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
     end
 
     it "should not accept plain http connections" do
       deviceobj = mock 'compellent server'
       deviceobj = described_class.new('http://root@pfiler.example.com')
-	  expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
+      expect{expect(response).to eq(response.match("Error"))}.not_to raise_error
     end
-	
+
     it "should not connect to the device compellent - device not accessible" do
       response = mock 'compellent server'
       Puppet::Util::Log.level = :debug
@@ -51,9 +51,9 @@ describe Puppet::Util::NetworkDevice::Compellent::Device do
       puts "Compellent device discovery process ended."
 
     end
-	
-	context "#parse" do
-    
+
+    context "#parse" do
+
       it "should parse url" do
         parseobj = mock 'compellent parse object'
         Puppet::Util::Log.level = :debug
@@ -61,7 +61,7 @@ describe Puppet::Util::NetworkDevice::Compellent::Device do
         puts "parse url started"
         puts "************************************************************************************************"
         puts "************************************************************************************************"
-       deviceobj =  described_class.new(device_conf['url'])
+        deviceobj =  described_class.new(device_conf['url'])
         transobj = deviceobj.transport
         puts transobj.host
         puts transobj.user
@@ -70,11 +70,11 @@ describe Puppet::Util::NetworkDevice::Compellent::Device do
         puts "************************************************************************************************"
         puts "parse url ended"
 
-     end
+      end
     end
 
     context "#facts" do
-    
+
       it "should connect to the device compellent and retrive facts" do
         factsobj = mock 'compellent facts object'
         Puppet::Util::Log.level = :debug
@@ -95,7 +95,7 @@ describe Puppet::Util::NetworkDevice::Compellent::Device do
         puts "************************************************************************************************"
         puts "facts ended"
 
-     end
+      end
     end
 
   end

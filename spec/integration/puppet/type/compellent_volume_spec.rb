@@ -6,24 +6,22 @@ describe Puppet::Type.type(:compellent_volume) do
 
   let :resource do
     described_class.new(
-          :name          		=> 'Test_Volume_spec',
-	  :ensure        		=> 'present',
-	  :boot				=> :false,
-	  :volumefolder 		=> :'',
-	  :purge			=> :'yes',
-	  :size		                => :'2g',
-	  :notes          		=> 'Test Space Notes',
-	  :replayprofile		=> 'Sample',
-	  :storageprofile		=> 'Low Priority'
+    :name          		=> 'Test_Volume_spec',
+    :ensure        		=> 'present',
+    :boot				      => false,
+    :volumefolder 		=> '',
+    :purge			      => 'yes',
+    :size		          => '2g',
+    :notes          	=> 'Test Space Notes',
+    :replayprofile		=> 'Sample',
+    :storageprofile		=> 'Low Priority'
     )
   end
 
-  
   it "should have name as its keyattribute" do
     described_class.key_attributes.should == [:name]
   end
 
-  
   describe "when validating attributes" do
     [:name].each do |param|
       it "should hava a #{param} parameter" do
@@ -32,9 +30,8 @@ describe Puppet::Type.type(:compellent_volume) do
     end
   end
 
-  
   describe "when validating values" do
-  
+
     describe "for name" do
       it "should allow a valid mapping name where ensure is present" do
         described_class.new(:name => 'Test_Volume_spec', :ensure => 'present')[:name].should == 'Test_Volume_Test'
@@ -58,6 +55,6 @@ describe Puppet::Type.type(:compellent_volume) do
         expect { described_class.new(:name => 'newvolThree', :ensure => 'foo') }.to raise_error Puppet::Error, /Invalid value/
       end
     end
-	
-  end	
+
+  end
 end

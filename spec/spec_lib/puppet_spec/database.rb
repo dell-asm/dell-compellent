@@ -17,7 +17,6 @@ def can_use_scratch_database?
   sqlite? and Puppet.features.rails?
 end
 
-
 # This is expected to be called in your `before :each` block, and will get you
 # ready to roll with a serious database and all.  Cleanup is handled
 # automatically for you.  Nothing to do there.

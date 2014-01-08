@@ -14,6 +14,7 @@ rescue LoadError
 end
 
 require 'puppet'
+
 gem 'rspec', '>=2.0.0'
 require 'rspec/expectations'
 
@@ -25,7 +26,6 @@ end
 require 'pathname'
 require 'tmpdir'
 require 'fileutils'
-
 require 'puppet_spec/verbose'
 require 'puppet_spec/files'
 require 'puppet_spec/settings'

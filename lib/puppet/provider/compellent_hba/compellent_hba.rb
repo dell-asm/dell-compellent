@@ -33,7 +33,7 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
 
   def remove_serverhbacommandline
     folder_value = @resource[:serverfolder]
-if ((folder_value != nil) && (folder_value.length > 0))
+    if ((folder_value != nil) && (folder_value.length > 0))
       server_index = self.hash_map['Index']
     else
       server_index = self.hash_map['Index'][0]
@@ -136,15 +136,15 @@ if ((folder_value != nil) && (folder_value.length > 0))
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:serverfolder]
     if ((folder_value != nil) && (folder_value.length > 0))
-        self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
-        wwn_list = self.hash_map['WWN_List']
+      self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
+      wwn_list = self.hash_map['WWN_List']
       Puppet.debug("folder is not null : #{self.hash_map}")
     else
       self.hash_map = parser_obj.retrieve_empty_folder_server_properties(server_hba_show_response_xml,resourcename)
       Puppet.debug("folder is null : #{self.hash_map}")
       wwn_list = self.hash_map['WWN_List']
     end
-	Puppet.debug("hash_map : #{self.hash_map}")
+    Puppet.debug("hash_map : #{self.hash_map}")
     Puppet.debug("WWN list - #{wwn_list}")
     find_wwn_list(wwn_list)
     Puppet.debug(@resource[:wwn])
