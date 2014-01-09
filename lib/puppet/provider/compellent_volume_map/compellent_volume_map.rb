@@ -110,7 +110,7 @@ Puppet::Type.type(:compellent_volume_map).provide(:compellent_volume_map, :paren
       parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(mapvolume_exitcodexml)
       hash= parser_obj.return_response
-      #File.delete(mapvolume_exitcodexml)
+      File.delete(mapvolume_exitcodexml)
       if "#{hash['Success']}".to_str() == "TRUE"
         Puppet.info("Successfully mapped volume '#{resourcename}' with the server '#{servername}'.")
       else
@@ -128,19 +128,21 @@ Puppet::Type.type(:compellent_volume_map).provide(:compellent_volume_map, :paren
     resourcename = @resource[:name]
     device_id = get_deviceid
     Puppet.debug("Device Id for Volume - #{device_id}")
-    if  #{device_id} != ""
+    if device_id != ""
     Puppet.debug("Invoking destroy command")
       unmapvolume_exitcodexml = "#{CommonLib.get_log_path(1)}/unmapVolumeExitCode_#{CommonLib.get_unique_refid}.xml"
       transport.command_exec("#{libpath}","#{unmapvolume_exitcodexml}","volume unmap -deviceid #{device_id}")
       parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(unmapvolume_exitcodexml)
       hash= parser_obj.return_response
-      #File.delete(unmapvolume_exitcodexml)
+      File.delete(unmapvolume_exitcodexml)
       if "#{hash['Success']}".to_str() == "TRUE"
         Puppet.info("Successfully unmapped volume '#{resourcename}' with the server.")
       else
         raise Puppet::Error, "#{hash['Error']}"
       end
+	else
+        Puppet.info("Volume '#{resourcename}' not found to unmap with server '#{servername}'.")  
     end
 
   end
@@ -171,7 +173,7 @@ Puppet::Type.type(:compellent_volume_map).provide(:compellent_volume_map, :paren
     Puppet.debug("volume_name : #{volume_name}")
     Puppet.debug("hash_map - #{self.hash_map}")
     device_id = get_deviceid
-    #File.delete(servershow_exitcodexml,servershow_responsexml)
+    File.delete(servershow_exitcodexml,servershow_responsexml)
     if ((volume_id != nil) && (volume_id.include? device_id))
       Puppet.info("Volume '#{resourcename}' mapped with server '#{servername}'")
       true
