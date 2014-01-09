@@ -10,7 +10,6 @@ Puppet::Type.type(:compellent_volume_map).provide(:compellent_volume_map, :paren
   def showvolume_commandline
     command = "volume show -name '#{@resource[:name]}'"
     folder_value = @resource[:volumefolder]
-
     if ((folder_value != nil) && (folder_value.length > 0))
       command = command + " -folder '#{folder_value}'"
     end
@@ -36,8 +35,7 @@ Puppet::Type.type(:compellent_volume_map).provide(:compellent_volume_map, :paren
     volumeshow_exitcodexml = "#{CommonLib.get_log_path(1)}/volumeShowExitCode_#{CommonLib.get_unique_refid}.xml"
     volumeshow_responsexml = "#{CommonLib.get_log_path(1)}/volumeShowResponse_#{CommonLib.get_unique_refid}.xml"
     transport.command_exec("#{libpath}","#{volumeshow_exitcodexml}","\"#{vol_show_cli} -xml #{volumeshow_responsexml}\"")
-    Puppet.debug("in method get_deviceid, after exectuing show volume command")
-
+    
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:volumefolder]
     if ((folder_value != nil) && (folder_value.length > 0))

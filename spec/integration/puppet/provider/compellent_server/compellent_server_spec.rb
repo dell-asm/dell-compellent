@@ -47,10 +47,22 @@ describe Puppet::Type.type(:compellent_server).provider(:compellent_server) do
     described_class.new( )
   end
 
+  describe "when not exists?" do
+    it ":should return true if server is not present" do
+      create_server.provider.should_not be_exists
+    end
+  end
+
+
   describe "create server" do
     it ":should be able to create server" do
-      create_server.provider.should_not be_exists
       create_server.provider.create
+    end
+  end
+
+ describe "when exists?" do
+    it ":should return true if server is present" do
+      destroy_server.provider.should be_exists
     end
   end
 

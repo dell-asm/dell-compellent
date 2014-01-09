@@ -49,7 +49,6 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     volshow_respxml = "#{CommonLib.get_log_path(1)}/volshowResp_#{CommonLib.get_unique_refid}.xml"
     volshow_exitcodexml = "#{CommonLib.get_log_path(1)}/volshowExitCode_#{CommonLib.get_unique_refid}.xml"
     transport.command_exec("#{libpath}","#{volshow_exitcodexml}","\"#{vol_show_cli} -xml #{volshow_respxml}\"")
-    Puppet.debug("in method get_deviceid, after executing show volume command")
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:volumefolder]
     if ((folder_value != nil) && (folder_value.length > 0))
@@ -60,11 +59,12 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
     end
     File.delete(volshow_respxml,volshow_exitcodexml)
     device_id = "#{hash['volume_DeviceID']}"
+	Puppet.debug("Device Id for Volume #{resourcename} is #{device_id}")
     return device_id
   end
 
   def create
-    Puppet.debug("Inside Create Method.")
+    Puppet.debug("Inside Create Volume Method.")
     libpath = CommonLib.get_path(1)
     folder_value = @resource[:volumefolder]
     resourcename = @resource[:name]
@@ -90,7 +90,6 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
         end
       end
     end
-
     volcreate_exitcodexml = "#{CommonLib.get_log_path(1)}/volCreateExitCode_#{CommonLib.get_unique_refid}.xml"
     transport.command_exec("#{libpath}","#{volcreate_exitcodexml}","\"#{volume_cli}\"")
 
@@ -106,7 +105,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
   end
 
   def destroy
-    Puppet.debug("Inside Destroy method")
+    Puppet.debug("Inside Destroy Volume method")
     libpath = CommonLib.get_path(1)
     resourcename = @resource[:name]
     device_id = get_deviceid
@@ -133,8 +132,7 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
   def exists?
     device_id = get_deviceid
     resourcename = @resource[:name]
-    Puppet.debug("Device Id for Volume - #{device_id}")
-
+    
     if  "#{device_id}" == ""
       Puppet.debug("Puppet::Volume '#{resourcename}' does not exist")
       false

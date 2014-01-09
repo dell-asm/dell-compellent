@@ -40,13 +40,13 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
   end
 
   def create
-    puts "Inside Create Method."
+    Puppet.debug("Inside Create Method.")
     server_name = @resource[:name]
     Puppet.debug("Resource name #{server_name}")
     folder_value = @resource[:serverfolder]
     servercli = create_servercommandline
     libpath = CommonLib.get_path(1)
-    puts "Server CLI"
+    Puppet.debug("Server CLI : #{servercli}")
     puts servercli
 
     Puppet.debug("Creating server with name '#{server_name}'")
@@ -82,7 +82,6 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
       Puppet.info("Unable to create the server '#{server_name}'.")
       raise Puppet::Error, "#{hash['Error']}"
     end
-
   end
 
   def destroy
@@ -140,7 +139,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     Puppet.debug("Value = #{@property_hash[:ensure]}")
     File.delete(servershow_exitcodexml,servershow_responsexml)
     if  "#{server_index}" == ""
-      Puppet.info("Server does not exist")
+      Puppet.info("Puppet::Server #{server_name} does not exist")
       false
     else
       #Server exist, can delete!

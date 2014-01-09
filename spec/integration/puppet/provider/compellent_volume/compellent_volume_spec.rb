@@ -53,10 +53,22 @@ describe Puppet::Type.type(:compellent_volume).provider(:compellent_volume) do
     described_class.new( )
   end
 
+  describe "when not exists?" do
+    it ":should return true if volume is not present" do
+      create_volume.provider.should_not be_exists
+    end
+  end
+   
   describe "create a new volume" do
     it ":should be able to create a volume" do
       create_volume.provider.should_not be_exists
       create_volume.provider.create
+    end
+  end
+  
+  describe "when exists?" do
+    it ":should return true if volume is present" do
+      delete_volume.provider.should be_exists
     end
   end
 
