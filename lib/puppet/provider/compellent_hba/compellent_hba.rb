@@ -92,11 +92,11 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
     Puppet.debug("in method find_wwn_list, wwn_list : #{wwn_list}")
     if ("#{wwn_list}".size != 0 )
       str = (@resource[:wwn]).split(",")
-      Puppet.debug(str)
+      Puppet.debug("WWN after spilt : #{str}")
       self.valid_wwn = ""
       if("#{@resource[:ensure]}" == "absent")
         for item in str
-          if (wwn_list.include? item)
+          if (wwn_list.include? item.upcase)
             if self.valid_wwn.length  > 0
               self.valid_wwn = self.valid_wwn + ",#{item}"
             else
@@ -106,7 +106,7 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
         end
       else
         for item in str
-          if !(wwn_list.include? item)
+          if !(wwn_list.include? item.upcase)
             if self.valid_wwn.length  > 0
               self.valid_wwn =  self.valid_wwn + ",#{item}"
             else
