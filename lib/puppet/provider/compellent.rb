@@ -5,7 +5,7 @@ require 'puppet/util/network_device/compellent/device'
 
 class Puppet::Provider::Compellent < Puppet::Provider
 
-  attr_accessor :device
+  attr_accessor :device, :transport
   def self.transport
     if Facter.value(:url) then
       Puppet.debug "Puppet::Util::NetworkDevice::Compellent: connecting via facter url."
