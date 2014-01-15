@@ -7,7 +7,7 @@ describe Puppet::Type.type(:compellent_volume).provider(:compellent_volume) do
 
   before(:each) do
     @fixture = Compellent_volume_fixture.new
-    mock_transport=double('transport')
+    mock_transport=mock('transport')
     @fixture.provider.transport = mock_transport
     Puppet.stub(:debug)
 

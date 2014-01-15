@@ -7,7 +7,7 @@ describe Puppet::Type.type(:compellent_hba).provider(:compellent_hba) do
 
   before(:each) do
     @fixture = Compellent_hba_fixture.new
-    mock_transport=double('transport')
+    mock_transport=mock('transport')
     @fixture.provider.transport = mock_transport
     Puppet.stub(:debug)
 
