@@ -16,8 +16,7 @@
 #      servername => '78QR1V1',
 #      operatingsystem => 'VMWare ESX 5.1',
 #      serverfolder => 'ASM_FOL',
-#      wwn1 => '21000024FF43A69A',
-#      wwn2 => '21000024FF43A69B',
+#      wwn => '21000024FF43A69A, 21000024FF43A69B',
 #  }
 #
 define compellent::createvol (
@@ -32,8 +31,7 @@ define compellent::createvol (
 	$servername,
 	$operatingsystem = 'VMWare ESX 5.1',
 	$serverfolder = '',
-	$wwn1,
-	$wwn2,
+	$wwn,
 	$porttype = 'FiberChannel',
 	$manual = false,
 	$force = true,
@@ -42,6 +40,10 @@ define compellent::createvol (
 	$lun = '',
 	$localport = '',
 ) {
+	$wwn_array = strip(split($wwn, ','))
+	$wwn1 = $wwn_array[0]
+	$wwn2 = $wwn_array[1]
+
 	compellent_volume {
 		"$name":
 			size => "$size",
