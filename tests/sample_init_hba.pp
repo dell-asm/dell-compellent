@@ -16,7 +16,7 @@ class compellent {
   compellent::hba { 'Test_Server':
     ensure       => 'absent',
     serverfolder => '',
-    porttype     => 'FiberChannel',
+    porttype     => 'FibreChannel',
     wwn          => '21000024FF4ABF6C',
     manual       => true,
   }

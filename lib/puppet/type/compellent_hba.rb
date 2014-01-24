@@ -33,7 +33,7 @@ Puppet::Type.newtype(:compellent_hba) do
   end
 
   newparam(:porttype) do
-    desc "The porttype. Valid values are iSCSI or FiberChannel."
+    desc "The porttype. Valid values are iSCSI or FibreChannel."
   end
 
   newparam(:manual, :boolean => true) do

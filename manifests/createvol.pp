@@ -20,76 +20,77 @@
 #  }
 #
 define compellent::createvol (
-	$size = '100g',
-	$boot = 'false',
-	$volumefolder = '',
-	$purge = 'yes',
-	$volume_notes = '',
-	$server_notes = '',
-	$replayprofile = 'Sample',
-	$storageprofile = 'Low Priority',
-	$servername,
-	$operatingsystem = 'VMWare ESX 5.1',
-	$serverfolder = '',
-	$wwn,
-	$porttype = 'FiberChannel',
-	$manual = false,
-	$force = true,
-	$readonly = false,
-	$singlepath = false,
-	$lun = '',
-	$localport = '',
+  $size = '100g',
+  $boot = 'false',
+  $volumefolder = '',
+  $purge = 'yes',
+  $volume_notes = '',
+  $server_notes = '',
+  $replayprofile = 'Sample',
+  $storageprofile = 'Low Priority',
+  $servername = '',
+  $operatingsystem = 'VMWare ESX 5.1',
+  $serverfolder = '',
+  $wwn = '',
+  $porttype = 'FibreChannel',
+  $manual = false,
+  $force = true,
+  $readonly = false,
+  $singlepath = false,
+  $lun = '',
+  $localport = '',
 ) {
-	$wwn_array = strip(split($wwn, ','))
-	$wwn1 = $wwn_array[0]
-	$wwn2 = $wwn_array[1]
+  compellent_volume {"$name":
+    size => "$size",
+    boot => "$boot",
+    volumefolder => "$volumefolder",
+    purge => "$purge",
+    notes => "$volume_notes",
+    replayprofile => "$replayprofile",
+    storageprofile => "$storageprofile",
+    ensure => 'present',
+  }
 
-	compellent_volume {
-		"$name":
-			size => "$size",
-			boot => "$boot",
-			volumefolder => "$volumefolder",
-			purge => "$purge",
-			notes => "$volume_notes",
-			replayprofile => "$replayprofile",
-			storageprofile => "$storageprofile",
-			ensure => 'present',
-	}
+  if empty($servername) != true {
+    if empty($wwn) != true {
+      $temp_wwn_array = strip(split($wwn, ','))
+      $wwn_array = unique($temp_wwn_array)
+      $wwn1 = $wwn_array[0]
+      $wwn2 = inline_template("<%= @wwn_array.drop(1).join(',') %>")
 
-	compellent_server {
-		"$servername":
-			operatingsystem => "$operatingsystem",
-			notes => "$server_notes",
-			serverfolder => "$serverfolder",
-			wwn => "$wwn1",
-			ensure => 'present',
-	}
+      compellent_server { "$servername":
+        operatingsystem => "$operatingsystem",
+        notes => "$server_notes",
+        serverfolder => "$serverfolder",
+        wwn => "$wwn1",
+        ensure => 'present',
+        require =>  Compellent_volume["$name"],
+      }
 
-	compellent_hba {
-		"$servername":
-			wwn => "$wwn2",
-			serverfolder => "$serverfolder",
-			porttype => "$porttype",
-			manual => "$manual",
-			ensure => 'present',
-	}
+      if empty($wwn2) != true {
+        compellent_hba { "$servername":
+          wwn => "$wwn2",
+          serverfolder => "$serverfolder",
+          porttype => "$porttype",
+          manual => "$manual",
+          ensure => 'present',
+          require =>  Compellent_server["$servername"],
+        }
+      }
 
-	compellent_volume_map {
-		"$name":
-			boot => "$boot",
-			volumefolder => "$volumefolder",
-			serverfolder => "$serverfolder",
-			force => "$force",
-			readonly => "$readonly",
-			singlepath => "$singlepath",
-			servername => "$servername",
-			lun => "$lun",
-			localport => "$localport",
-			ensure => 'present',
-	}
-
-	Compellent_server["$servername"]
-		-> Compellent_hba["$servername"]
-		-> Compellent_volume["$name"]
-		-> Compellent_volume_map["$name"]
+      compellent_volume_map { "$name":
+        boot => "$boot",
+        volumefolder => "$volumefolder",
+        serverfolder => "$serverfolder",
+        force => "$force",
+        readonly => "$readonly",
+        singlepath => "$singlepath",
+        servername => "$servername",
+        lun => "$lun",
+        localport => "$localport",
+        ensure => 'present',
+        require =>  Compellent_server["$servername"],
+      }
+    }
+  }
 }
