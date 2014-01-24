@@ -16,7 +16,7 @@ Puppet::Type.newtype(:compellent_server) do
   end
 
   newparam(:operatingsystem) do
-    desc "The Server operatingSystem. Valid format is 1-9(kmgt)."
+    desc "The Server operatingSystem."
   end
 
   newparam(:notes) do
@@ -34,11 +34,6 @@ Puppet::Type.newtype(:compellent_server) do
 
   newparam(:wwn) do
     desc "The WWN to map Server."
-    validate do |value|
-      unless value =~ /^[\w,]*$/
-        raise ArgumentError, "%s is not a valid WWN number." % value
-      end
-    end
   end
 
 end
