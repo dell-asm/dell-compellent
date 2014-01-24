@@ -3,11 +3,11 @@
 # Utility class for creation of a Compellent Server#
 #
 define compellent::server (
-  $wwn             = '21000024FF44486F',
-  $operatingsystem = 'Windows 2012',
+  $wwn             = '',
+  $operatingsystem = '',
   $ensure          = 'present',
   $serverfolder    = '',
-  $notes           = 'Test Server',) {
+  $notes           = '',) {
   compellent_server { "$name":
     ensure          => $ensure,
     operatingsystem => $operatingsystem,

@@ -3,12 +3,12 @@
 # Utility class for creation of a Compellent Volume#
 #
 define compellent::volume (
-  $size           = '10g',
+  $size           = '',
   $purge          = 'yes',
   $ensure         = 'present',
   $boot           = false,
   $volumefolder   = '',
-  $notes          = 'Test Volume',
+  $notes          = '',
   $replayprofile  = 'Sample',
   $storageprofile = 'Low Priority',) {
   compellent_volume { "$name":
