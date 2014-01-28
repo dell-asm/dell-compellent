@@ -22,7 +22,7 @@ class Puppet::Util::NetworkDevice::Transport_compellent
       "-password", @password,
       "-xmloutputfile", resp_xml,
       "-c", command] + extra_args
-    Puppet.debug("Executing compellent command: " + args.join(" "))
+   # Puppet.debug("Executing compellent command: " + args.join(" "))
     ret = system("java", *args)
     parser_obj = ResponseParser.new('_')
     parser_obj.parse_exitcode(resp_xml)
@@ -42,7 +42,7 @@ class Puppet::Util::NetworkDevice::Transport_compellent
       "-password", @password,
       "-xmloutputfile", respXml,
       "-c", command]
-    Puppet.debug("Executing compellent command: " + args.join(" "))
+ #   Puppet.debug("Executing compellent command: " + args.join(" "))
     ret = system("java", *args)
   end
 end
