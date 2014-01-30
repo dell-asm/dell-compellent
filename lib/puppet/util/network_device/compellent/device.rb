@@ -7,6 +7,8 @@ require 'uri'
 require 'net/https'
 require 'puppet/files/ResponseParser'
 require 'puppet/files/CommonLib'
+require '/etc/puppetlabs/puppet/modules/asm_lib/lib/security/encode'
+
 
 class Puppet::Util::NetworkDevice::Compellent::Device
 
@@ -24,7 +26,8 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     @transport = Puppet::Util::NetworkDevice::Transport_compellent.new
     @transport.host = @url.host
     @transport.user = URI.decode(@url.user)
-    @transport.password = URI.decode(@url.password)
+    #@transport.password = URI.decode(@url.password)
+	@transport.password = URI.decode(asm_decrypt(@url.password))
     Puppet.debug("host is #{@transport.host}")
 
     login_respxml = "#{CommonLib.get_log_path(1)}/loginResp_#{CommonLib.get_unique_refid}.xml"
