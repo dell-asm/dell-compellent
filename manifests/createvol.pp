@@ -31,7 +31,7 @@ define compellent::createvol (
   $servername = '',
   $operatingsystem = 'VMWare ESX 5.1',
   $serverfolder = '',
-  $wwn = '',
+  $wwn = [],
   $porttype = 'FibreChannel',
   $manual = false,
   $force = true,
@@ -53,10 +53,8 @@ define compellent::createvol (
 
   if empty($servername) != true {
     if empty($wwn) != true {
-      $temp_wwn_array = strip(split($wwn, ','))
-      $wwn_array = unique($temp_wwn_array)
-      $wwn1 = $wwn_array[0]
-      $wwn2 = inline_template("<%= @wwn_array.drop(1).join(',') %>")
+      $wwn1 = $wwn[0]
+      $wwn2 = inline_template("<%= @wwn.drop(1).join(',') %>")
 
       compellent_server { "$servername":
         operatingsystem => "$operatingsystem",
