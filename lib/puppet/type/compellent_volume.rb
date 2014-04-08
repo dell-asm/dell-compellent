@@ -17,6 +17,20 @@ Puppet::Type.newtype(:compellent_volume) do
 
   newparam(:size) do
     desc "The initial volume size. Valid format is 1-9(kmgt)."
+    validate do |value|
+      unless value =~ /^\d+([kmgt]$|(KB|MB|GB|TB)$)/
+       	raise ArgumentError, "%s is not a valid initial volume size." % value
+      end
+    end
+    
+    munge do |value|
+      if value =~ /^\d+((KB|MB|GB|TB)$)/
+        value.sub(/(KB)/,'k')
+        value.sub(/(MB)/,'m')
+        value.sub(/(GB)/,'g')
+        value.sub(/(TB)/,'t')        
+      end
+    end   
   end
 
   newparam(:boot, :boolean => true) do
