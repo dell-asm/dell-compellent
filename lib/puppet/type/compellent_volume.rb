@@ -24,13 +24,17 @@ Puppet::Type.newtype(:compellent_volume) do
     end
     
     munge do |value|
-      if value =~ /^\d+((KB|MB|GB|TB)$)/
-        value.sub(/(KB)/,'k')
-        value.sub(/(MB)/,'m')
-        value.sub(/(GB)/,'g')
-        value.sub(/(TB)/,'t')        
+      if value =~ /^\d+(KB)$/
+        value.sub!(/(KB)/,'k')
+      elsif value =~ /^\d+(MB)$/
+        value.sub!(/(MB)/,'m')
+      elsif value =~ /^\d+(GB)$/
+        value.sub!(/(GB)/,'g')
+      elsif value =~ /^\d+(TB)$/
+        value.sub!(/(TB)/,'t')
       end
-    end   
+    end
+  
   end
 
   newparam(:boot, :boolean => true) do
