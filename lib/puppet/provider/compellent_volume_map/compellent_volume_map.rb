@@ -111,6 +111,8 @@ Puppet::Type.type(:compellent_volume_map).provide(:compellent_volume_map, :paren
       File.delete(mapvolume_exitcodexml)
       if "#{hash['Success']}".to_str() == "TRUE"
         Puppet.info("Successfully mapped volume '#{resourcename}' with the server '#{servername}'.")
+      elsif "#{hash['Error']}".to_str.include?('Server already mapped to volume')
+        Puppet.info("Server '#{servername}' already mapped to volume '#{resourcename}'")
       else
         raise Puppet::Error, "#{hash['Error']}"
       end
