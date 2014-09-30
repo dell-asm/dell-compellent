@@ -42,8 +42,17 @@ class Puppet::Util::NetworkDevice::Transport_compellent
       "-password", @password,
       "-xmloutputfile", respXml,
       "-c", command]
- #   Puppet.debug("Executing compellent command: " + args.join(" "))
-    ret = system("java", *args)
+    #   Puppet.debug("Executing compellent command: " + args.join(" "))
+    ret = `/opt/puppet/bin/java #{args.join(' ')} 2>&1`
+    Puppet.debug("Output: #{ret}")
+    # Need to retry if there is any connection reset message
+    if ret.match(/Connection reset/i)
+      Puppet.debug("Connection reset observed. sleep for 10 seconds and retry")
+      sleep(10)
+      ret = `/opt/puppet/bin/java #{args.join(' ')} 2>&1`
+    else
+      ret
+    end
   end
 end
 
