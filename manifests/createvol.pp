@@ -54,7 +54,7 @@ define compellent::createvol (
   if empty($servername) != true {
     if empty($wwn) != true {
       $wwn1 = $wwn[0]
-      $wwn2 = inline_template("<%= @wwn.drop(1).join(',') %>")
+      $wwn2 = inline_template("<%= @wwn.join(',') %>")
 
       compellent_server { "$servername":
         operatingsystem => "$operatingsystem",
