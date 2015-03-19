@@ -16,6 +16,9 @@ class Puppet::Util::NetworkDevice::Compellent::Device
   def initialize(url, option = {})
     Puppet.debug("Device login started")
     @url = URI.parse(url)
+    @query = Hash.new([])
+    @query = CGI.parse(@url.query) if @url.query
+
     redacted_url = @url.dup
     redacted_url.password = "****" if redacted_url.password
     Puppet.debug("Puppet::Device::Compellent: connecting to Compellent device #{redacted_url}")
@@ -23,12 +26,13 @@ class Puppet::Util::NetworkDevice::Compellent::Device
     raise ArgumentError, "no user specified" unless @url.user
     raise ArgumentError, "no password specified" unless @url.password
     Puppet.debug("Host IP is #{@url.host}  #{@url.scheme}")
+
     @transport = Puppet::Util::NetworkDevice::Transport_compellent.new
     @transport.host = @url.host
     @transport.user = URI.decode(@url.user)
-    #@transport.password = URI.decode(@url.password)
-	@transport.password = URI.decode(asm_decrypt(@url.password))
+    @transport.password = URI.decode(asm_decrypt(@url.password))
     Puppet.debug("host is #{@transport.host}")
+    override_using_credential_id
 
     login_respxml = "#{CommonLib.get_log_path(1)}/loginResp_#{CommonLib.get_unique_refid}.xml"
     response = @transport.exec("system show -xml #{login_respxml}")
@@ -39,6 +43,15 @@ class Puppet::Util::NetworkDevice::Compellent::Device
       Puppet.debug("Login successful..")
     else
       raise Puppet::Error, "#{hash['Error']}"
+    end
+  end
+
+  def override_using_credential_id
+    if id = @query.fetch('credential_id', []).first
+      require 'asm/cipher'
+      cred = ASM::Cipher.decrypt_credential(id)
+      @transport.user = cred.username
+      @transport.password = cred.password
     end
   end
 
