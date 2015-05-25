@@ -46,7 +46,7 @@ class Puppet::Util::NetworkDevice::Transport_compellent
     ret = `/opt/puppet/bin/java #{args.join(' ')} 2>&1`
     Puppet.debug("Output: #{ret}")
     # Need to retry if there is any connection reset message
-    if ret.match(/Connection reset/i)
+    if ret.match(/Connection reset|Couldn't connect to/i)
       Puppet.debug("Connection reset observed. sleep for 10 seconds and retry")
       sleep(10)
       ret = `/opt/puppet/bin/java #{args.join(' ')} 2>&1`
