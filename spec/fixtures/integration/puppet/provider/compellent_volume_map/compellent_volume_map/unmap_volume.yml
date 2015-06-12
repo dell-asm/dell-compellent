@@ -1,7 +1,0 @@
-UnmapVolume1:
-  name: Test_Volume_Test
-  ensure: absent
-  serverfolder: ''
-  servername: 'Test_Server1'
-  volumefolder: ''
-

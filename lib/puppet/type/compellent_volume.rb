@@ -1,8 +1,6 @@
 Puppet::Type.newtype(:compellent_volume) do
   @doc = "Manage Compellent Volume creation, modification and deletion."
 
-  apply_to_device
-
   ensurable
 
   newparam(:name) do

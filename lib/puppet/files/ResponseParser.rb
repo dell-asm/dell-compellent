@@ -137,20 +137,18 @@ class ResponseParser
   end
 
   def retrieve_empty_folder_volume_properties(server_file_name, volume_name)
-    prop_map=Hash.new
+    prop_map = Hash.new
     server_file = File.new(server_file_name)
     result_doc = Document.new(server_file)
-    result=false
     XPath.each(result_doc, "//volume") do |volume_element|
       if volume_element.elements["Name"].text.eql?"#{volume_name}"
         if volume_element.elements["Folder"].text.nil?
           read_element(volume_element,prop_map,nil)
-          index=0
+          index = 0
           XPath.each(result_doc, "//volume/Mappings/Mappings") do |mapping_element|
             read_element(mapping_element,prop_map,index)
             index+=1
           end
-          result= true
           break
         end
       end
@@ -160,7 +158,7 @@ class ResponseParser
 
   def read_element(xml_element,prop_map,index)
     xml_element.each_element do |child|
-      if not(child.has_elements?)
+      if !child.has_elements?
         if index.nil?
           key="#{xml_element.name()}_#{child.name()}"
         else

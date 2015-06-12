@@ -3,7 +3,7 @@ require 'puppet/files/ResponseParser'
 require 'puppet/files/CommonLib'
 
 Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::Provider::Compellent) do
-  @doc = "Manage Compellent Server HBA creation, modification and deletion."
+  @doc = 'Manage Compellent Server HBA creation, modification and deletion.'
 
   attr_accessor :hash_map, :valid_wwn
   @hash_map
@@ -12,7 +12,7 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
     #command = "server addhba -name '#{@resource[:name]}' -WWN '#{@resource[:wwn]}'"
     folder_value = @resource[:serverfolder]
     Puppet.debug(folder_value)
-    if ((folder_value != nil) && (folder_value.length > 0))
+    if (folder_value != nil) && (folder_value.length > 0)
       server_index = self.hash_map['Index']
       command = "server addhba -index '#{server_index}' -WWN '#{self.valid_wwn}'"
     else
@@ -33,7 +33,7 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
 
   def remove_serverhbacommandline
     folder_value = @resource[:serverfolder]
-    if ((folder_value != nil) && (folder_value.length > 0))
+    if (folder_value != nil) && (folder_value.length > 0)
       server_index = self.hash_map['Index']
     else
       server_index = self.hash_map['Index'][0]
@@ -47,21 +47,21 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
     if "#{@resource[:serverfolder]}".size != 0
       command = command + " -folder '#{@resource[:serverfolder]}'"
     end
-    return command
+    command
   end
 
   def create
-    Puppet.debug("Inside Add Server HBA Method.")
+    Puppet.debug('Inside Add Server HBA Method.')
     add_hba_cli = add_serverhbacommandline
     resourcename = @resource[:name]
     libpath =CommonLib.get_path(1)
     add_server_hba_exitcodexml = "#{CommonLib.get_log_path(1)}/addserverhbaExitCode_#{CommonLib.get_unique_refid}.xml"
-    transport.command_exec("#{libpath}","#{add_server_hba_exitcodexml}","\"#{add_hba_cli}\"")
+    connection.command_exec("#{libpath}","#{add_server_hba_exitcodexml}","\"#{add_hba_cli}\"")
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(add_server_hba_exitcodexml)
     hash= parser_obj.return_response
     File.delete(add_server_hba_exitcodexml)
-    if "#{hash['Success']}".to_str() == "TRUE"
+    if "#{hash['Success']}".to_str() == 'TRUE'
       Puppet.info("Successfully added HBA to the server '#{resourcename}'.")
     else
       Puppet.info("Unable to add the HBA in the server '#{resourcename}'.")
@@ -70,17 +70,17 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
   end
 
   def destroy
-    Puppet.debug("Inside Remove Server HBA Method.")
+    Puppet.debug('Inside Remove Server HBA Method.')
     delete_hba_cli = remove_serverhbacommandline
     resourcename = @resource[:name]
     libpath = CommonLib.get_path(1)
     remove_server_hba_exitcodexml = "#{CommonLib.get_log_path(1)}/removeserverhbaExitCode_#{CommonLib.get_unique_refid}.xml"
-    transport.command_exec("#{libpath}","#{remove_server_hba_exitcodexml}","\"#{delete_hba_cli}\"")
+    connection.command_exec("#{libpath}","#{remove_server_hba_exitcodexml}","\"#{delete_hba_cli}\"")
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(remove_server_hba_exitcodexml)
     hash= parser_obj.return_response
     File.delete(remove_server_hba_exitcodexml)
-    if "#{hash['Success']}".to_str() == "TRUE"
+    if "#{hash['Success']}".to_str() == 'TRUE'
       Puppet.info("Successfully deleted the HBA from the server '#{resourcename}'.")
     else
       Puppet.info("Unable to remove the HBA from the server '#{resourcename}'.")
@@ -91,10 +91,10 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
   def find_wwn_list(wwn_list)
     Puppet.debug("in method find_wwn_list, wwn_list : #{wwn_list}")
     if ("#{wwn_list}".size != 0 )
-      str = (@resource[:wwn]).split(",")
+      str = (@resource[:wwn]).split(',')
       Puppet.debug("WWN after spilt : #{str}")
-      self.valid_wwn = ""
-      if("#{@resource[:ensure]}" == "absent")
+      self.valid_wwn = ''
+      if("#{@resource[:ensure]}" == 'absent')
         for item in str
           if (wwn_list.include? item.upcase)
             if self.valid_wwn.length  > 0
@@ -116,8 +116,8 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
         end
       end
     else
-      if("#{@resource[:ensure]}" == "absent")
-        self.valid_wwn = ""
+      if("#{@resource[:ensure]}" == 'absent')
+        self.valid_wwn = ''
       else
         self.valid_wwn = @resource[:wwn]
       end
@@ -132,10 +132,10 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
     show_hba_cli = show_serverhbacommandline
     server_hba_show_exitcode_xml = "#{CommonLib.get_log_path(1)}/serverHbaShowExitCode_#{CommonLib.get_unique_refid}.xml"
     server_hba_show_response_xml = "#{CommonLib.get_log_path(1)}/serverHbaShowResponse_#{CommonLib.get_unique_refid}.xml"
-    transport.command_exec("#{libpath}","#{server_hba_show_exitcode_xml}","\"#{show_hba_cli} -xml #{server_hba_show_response_xml}\"")
+    connection.command_exec("#{libpath}","#{server_hba_show_exitcode_xml}","\"#{show_hba_cli} -xml #{server_hba_show_response_xml}\"")
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:serverfolder]
-    if ((folder_value != nil) && (folder_value.length > 0))
+    if (folder_value != nil) && (folder_value.length > 0)
       self.hash_map = parser_obj.retrieve_server_properties(server_hba_show_response_xml)
       wwn_list = self.hash_map['WWN_List']
       Puppet.debug("folder is not null : #{self.hash_map}")
@@ -150,14 +150,14 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
     Puppet.debug(@resource[:wwn])
     Puppet.debug("valid_wwn after soring the valid wwn : #{self.valid_wwn}")
     File.delete(server_hba_show_exitcode_xml,server_hba_show_response_xml)
-    if (self.valid_wwn.length > 0)
-      if("#{@resource[:ensure]}" == "absent")
+    if self.valid_wwn.length > 0
+      if "#{@resource[:ensure]}" == 'absent'
         true
       else
         false
       end
     else
-      if("#{@resource[:ensure]}" == "absent")
+      if "#{@resource[:ensure]}" == 'absent'
         false
       else
         true
