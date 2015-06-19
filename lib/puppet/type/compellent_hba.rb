@@ -1,8 +1,6 @@
 Puppet::Type.newtype(:compellent_hba) do
   @doc = "Manage Server HBA creation, modification and deletion."
 
-  apply_to_device
-
   ensurable
 
   newparam(:name) do

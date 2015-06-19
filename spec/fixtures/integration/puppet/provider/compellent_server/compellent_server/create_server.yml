@@ -1,8 +1,0 @@
-CreateServer1:
-  name: 'Test_Server1'
-  ensure: 'present'
-  operatingsystem: 'Windows 2012'
-  serverfolder: ''
-  notes: ''
-  wwn: '' 	
-  wwn: '21000024FF4ABF6D'

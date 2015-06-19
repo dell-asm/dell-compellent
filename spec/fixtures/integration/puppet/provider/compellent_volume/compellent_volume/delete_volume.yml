@@ -1,8 +1,0 @@
-DeleteVolume1:
-  name: Test_Volume_spec_1
-  ensure: absent
-  purge: 'yes'
-  volumefolder: ''
-  notes: 'Test Space Notes'
-  replayprofile: 'Sample'
-  storageprofile: 'Low Priority'

@@ -1,6 +1,8 @@
 # Utility Class - command method
 
 require 'fileutils'
+require 'puppet'
+
 class CommonLib
   def self.get_log_path(num)
     base_path = '/opt/Dell/ASM/logs/compellent'

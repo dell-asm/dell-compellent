@@ -1,8 +1,6 @@
 Puppet::Type.newtype(:compellent_server) do
   @doc = "Manage Compellent Server creation and deletion."
 
-  apply_to_device
-
   ensurable
 
   newparam(:name) do

@@ -26,7 +26,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     if server_operatingsystem.length > 0
       command = command + " -os '#{server_operatingsystem}'"
     end
-    return command
+    command
   end
 
   def showserver_commandline
@@ -36,7 +36,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     if server_serverfolder.length > 0
       command = command + " -folder '#{@resource[:serverfolder]}'"
     end
-    return command
+    command
   end
 
   def create
@@ -53,7 +53,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     if "#{folder_value}".size != 0
       Puppet.debug("Creating server folder with name '#{folder_value}'")
       server_folder_exitcodexml = "#{CommonLib.get_log_path(1)}/serverFolderCreateExitCode_#{CommonLib.get_unique_refid}.xml"
-      transport.command_exec("#{libpath}","#{server_folder_exitcodexml}","\"serverfolder create -name '#{folder_value}'\"")
+      connection.command_exec("#{libpath}","#{server_folder_exitcodexml}","\"serverfolder create -name '#{folder_value}'\"")
       parser_obj=ResponseParser.new('_')
       parser_obj.parse_exitcode(server_folder_exitcodexml)
       hash= parser_obj.return_response
@@ -71,7 +71,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     end
 
     servercreate_exitcodexml = "#{CommonLib.get_log_path(1)}/serverCreateExitCode_#{CommonLib.get_unique_refid}.xml"
-    transport.command_exec("#{libpath}","#{servercreate_exitcodexml}","\"#{servercli}\"")
+    connection.command_exec("#{libpath}","#{servercreate_exitcodexml}","\"#{servercli}\"")
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(servercreate_exitcodexml)
     hash= parser_obj.return_response
@@ -98,7 +98,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
       server_index = self.hash_map['Index'][0]
     end
     Puppet.debug("server_index : #{server_index}")
-    transport.command_exec("#{libpath}","#{serverdestroy_exitcodexml}","\"server delete -index #{server_index}\"")
+    connection.command_exec("#{libpath}","#{serverdestroy_exitcodexml}","\"server delete -index #{server_index}\"")
     parser_obj=ResponseParser.new('_')
     parser_obj.parse_exitcode(serverdestroy_exitcodexml)
     hash= parser_obj.return_response
@@ -119,7 +119,7 @@ Puppet::Type.type(:compellent_server).provide(:compellent_server, :parent => Pup
     servershowcli = showserver_commandline
     servershow_exitcodexml = "#{CommonLib.get_log_path(1)}/serverShowExitCode_#{CommonLib.get_unique_refid}.xml"
     servershow_responsexml = "#{CommonLib.get_log_path(1)}/serverShowResponse_#{CommonLib.get_unique_refid}.xml"
-    transport.command_exec("#{libpath}","#{servershow_exitcodexml}","\"#{servershowcli} -xml #{servershow_responsexml}\"")
+    connection.command_exec("#{libpath}","#{servershow_exitcodexml}","\"#{servershowcli} -xml #{servershow_responsexml}\"")
     parser_obj=ResponseParser.new('_')
     folder_value = @resource[:serverfolder]
     server_index = ""
