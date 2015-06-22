@@ -2,8 +2,8 @@ require 'net/https'
 puppet_dir = Pathname.new(__FILE__).parent.parent
 require "#{puppet_dir}/files/CommonLib"
 require "#{puppet_dir}/files/ResponseParser"
+require "#{puppet_dir}/compellent/util"
 require 'puppet'
-require 'puppet/compellent/util'
 
 module Puppet
   module Compellent
