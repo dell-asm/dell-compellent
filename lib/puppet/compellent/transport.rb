@@ -1,4 +1,7 @@
 require 'net/https'
+require 'rest-client'
+require 'cgi'
+require 'json'
 puppet_dir = Pathname.new(__FILE__).parent.parent
 require "#{puppet_dir}/files/CommonLib"
 require "#{puppet_dir}/files/ResponseParser"
@@ -8,7 +11,7 @@ require 'puppet'
 module Puppet
   module Compellent
     class Transport
-      attr_accessor :host, :user, :password
+      attr_accessor :host, :port, :user, :password, :discovery_type, :jsessionid
       def initialize(connection_info=nil)
         @lib_path = CommonLib.get_path(1).to_s
         @log_path  = CommonLib.get_log_path(1).to_s
@@ -17,33 +20,50 @@ module Puppet
         if connection_info != nil
           self.user = connection_info[:username]
           self.host = connection_info[:server]
+          self.port = connection_info[:port]
           self.password = connection_info[:password]
+          self.discovery_type = connection_info[:discovery_type]
           script_run = true
         else
           parsed_config = Puppet::Compellent::Util.get_transport
           self.user = parsed_config[:user]
           self.host = parsed_config[:host]
           self.password = parsed_config[:password]
+          self.port = parsed_config[:port]
+          parsed_config[:port] == 443 ? self.discovery_type = 'Storage_Center' : self.discovery_type = 'EM'
         end
 
         Puppet.debug('Device login started')
 
 
-        Puppet.debug("#{self.class}: connecting to Compellent device #{self.host}")
+        if self.discovery_type == 'EM'
+          Puppet.debug("#{self.class}: connecting to Compellent EM #{self.host}")
 
-        raise ArgumentError, 'no user specified' unless self.user
-        raise ArgumentError, 'no password specified' unless self.password
+          raise ArgumentError, 'no user specified' unless self.user
+          raise ArgumentError, 'no password specified' unless self.password
 
-        Puppet.debug("Host IP is #{self.host}")
-        login_respxml = "#{CommonLib.get_log_path(1)}/loginResp_#{CommonLib.get_unique_refid}.xml"
-        response = exec("system show -xml #{login_respxml}")
-        hash = response[:xml_output_hash]
-        response_output = response[:xml_output_file]
-        File.delete(login_respxml,response_output)
-        if "#{hash['Success']}" == 'TRUE'
-          Puppet.debug('Login successful') if !script_run
+          if self.jsessionid = get_jsession_id
+            Puppet.debug('Connection successful with EM') if !script_run
+          else
+            raise Puppet::Error, "Failed to get JSESSION ID from EM" if !script_run
+          end
         else
-          raise Puppet::Error, "#{hash['Error']}" if !script_run
+          Puppet.debug("#{self.class}: connecting to Compellent device #{self.host}")
+
+          raise ArgumentError, 'no user specified' unless self.user
+          raise ArgumentError, 'no password specified' unless self.password
+
+          Puppet.debug("Host IP is #{self.host}")
+          login_respxml = "#{CommonLib.get_log_path(1)}/loginResp_#{CommonLib.get_unique_refid}.xml"
+          response = exec("system show -xml #{login_respxml}")
+          hash = response[:xml_output_hash]
+          response_output = response[:xml_output_file]
+          File.delete(login_respxml,response_output)
+          if "#{hash['Success']}" == 'TRUE'
+            Puppet.debug('Login successful') if !script_run
+          else
+            raise Puppet::Error, "#{hash['Error']}" if !script_run
+          end
         end
 
       end
@@ -90,6 +110,45 @@ module Puppet
           ret
         end
       end
+
+      def get_jsession_id
+        login_base_url="https://#{self.user}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
+        url = "#{login_base_url}/ApiConnection/Login"
+
+        response = RestClient::Request.execute(:url => url,
+                                               :method => :post,
+                                               :verify_ssl => false ,
+                                               :payload => '{}',
+                                               :headers => {:content_type => :json,
+                                                            :accept => :json ,
+                                                            'x-dell-api-version'=> '2.0' })
+
+        response.raw_headers["set-cookie"]
+      end
+
+      def get_url(end_point)
+        return "https://#{self.host}:#{self.port}/api/rest/#{end_point}"
+      end
+
+      def post_request(url,payload,method)
+        response = RestClient::Request.execute(:url => url,
+                                           :method => method.to_sym,
+                                           :verify_ssl => false,
+                                           :payload => payload,
+                                           :headers => headers
+        )
+        JSON.parse(response)
+      end
+
+      def headers
+        {
+            :content_type => :json,
+            :accept => :json,
+            'x-dell-api-version'=> '2.0',
+            'Cookie' => self.jsessionid
+        }
+      end
     end
+
   end
 end

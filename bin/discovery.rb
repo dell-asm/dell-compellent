@@ -17,14 +17,23 @@ opts = Trollop::options do
   opt :scheme, 'connection scheme', :default => 'https'
   opt :community_string, 'community string' #This is a stub and shouldnt be used
   opt :file, 'write to file'
+  opt :discovery_type, 'Discovery type Storage_Center / EM', :default => 'Storage_Center'
 end
 response = ''
+opts[:port] == 443 ? discovery_type = 'Storage_Center' : discovery_type = 'EM'
+
 begin
   Timeout.timeout(opts[:timeout]) do
     # intentionally doing this to let it finish
     folder = Pathname.new(__FILE__).parent
-    fact_retrieve_command = "#{folder}/compellent_facts.rb --server #{opts[:server]} --scheme #{opts[:scheme]} --username '#{opts[:username]}' "\
+    if discovery_type == 'EM'
+      fact_retrieve_command = "#{folder}/em_facts.rb --server #{opts[:server]} --scheme #{opts[:scheme]} --username '#{opts[:username]}' "\
       "--password '#{opts[:password]}'"
+    else
+      fact_retrieve_command = "#{folder}/compellent_facts.rb --server #{opts[:server]} --scheme #{opts[:scheme]} --username '#{opts[:username]}' "\
+      "--password '#{opts[:password]}'"
+    end
+
     response = `#{fact_retrieve_command}`
   end
 rescue Timeout::Error
