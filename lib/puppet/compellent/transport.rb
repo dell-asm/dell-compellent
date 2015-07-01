@@ -114,12 +114,10 @@ module Puppet
       def get_jsession_id
         login_base_url="https://#{self.user}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
         url = "#{login_base_url}/ApiConnection/Login"
-        puts "base url: #{url}"
 
         response = RestClient::Request.execute(:url => url,
                                                :method => :post,
                                                :verify_ssl => false ,
-                                               :user => self.user,
                                                :payload => '{}',
                                                :headers => {:content_type => :json,
                                                             :accept => :json ,
@@ -133,8 +131,6 @@ module Puppet
       end
 
       def post_request(url,payload,method)
-        puts "URL: #{url}"
-        puts "Headers: #{headers}"
         response = RestClient::Request.execute(:url => url,
                                            :method => method.to_sym,
                                            :verify_ssl => false,

@@ -35,7 +35,6 @@ def retrieve
   storage_center_info = @transport.post_request(storage_center_url,'{}','post')
   facts['storage_center_info'] = storage_center_info
 
-
   facts
 end
 
@@ -43,10 +42,6 @@ begin
   results = retrieve.to_json
   p results
   exit 0
-rescue Exception => e
-  puts e.message
-  puts e.backtrace
-  exit 1
 ensure
   results ||= {}
   compellent_cache = '/opt/Dell/ASM/cache'

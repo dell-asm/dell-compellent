@@ -38,9 +38,6 @@ begin
   end
 rescue Timeout::Error
   exit 1
-rescue => ex
-  puts ex.message
-  puts ex.backtrace
 ensure
   equallogic_json = File.join('/opt/Dell/ASM/cache', "#{opts[:server]}.json")
   if File.exists? equallogic_json
