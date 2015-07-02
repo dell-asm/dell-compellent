@@ -29,12 +29,9 @@ def retrieve
 
   enterprise_manager = @transport.get_url('EnterpriseManager/EmDataCollector')
   enterprise_manager_info = @transport.post_request(enterprise_manager,'{}','get')
-  facts['enterprise_manager_info'] = enterprise_manager_info
-
-  storage_center_url = @transport.get_url('StorageCenter/ScConfiguration/GetList')
-  storage_center_info = @transport.post_request(storage_center_url,'{}','post')
-  facts['storage_center_info'] = storage_center_info
-
+  enterprise_manager_info.keys.each do |em_key|
+    facts[em_key] = enterprise_manager_info[em_key]
+  end
   facts
 end
 
