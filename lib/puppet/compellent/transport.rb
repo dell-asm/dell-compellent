@@ -30,7 +30,7 @@ module Puppet
           self.host = parsed_config[:host]
           self.password = parsed_config[:password]
           self.port = parsed_config[:port]
-          parsed_config[:port] == 443 ? self.discovery_type = 'Storage_Center' : self.discovery_type = 'EM'
+          parsed_config[:discovery_type] != 'EM' ? self.discovery_type = 'Storage_Center' : self.discovery_type = 'EM'
         end
 
         Puppet.debug('Device login started')
