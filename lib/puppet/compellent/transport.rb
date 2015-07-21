@@ -112,7 +112,12 @@ module Puppet
       end
 
       def get_jsession_id
-        login_base_url="https://#{CGI.escape(self.user)}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
+        # For EM we need a single backslash as we are passing the value in HTTP URL instead of commandline
+        # username and password are already CGI escaped in the upper layer
+        username = CGI.unescape(self.user)
+        username = username.gsub('\\\\','\\')
+        login_base_url="https://#{CGI.escape(username)}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
+
         url = "#{login_base_url}/ApiConnection/Login"
 
         response = RestClient::Request.execute(:url => url,
