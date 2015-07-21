@@ -112,7 +112,7 @@ module Puppet
       end
 
       def get_jsession_id
-        login_base_url="https://#{self.user}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
+        login_base_url="https://#{CGI.escape(self.user)}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
         url = "#{login_base_url}/ApiConnection/Login"
 
         response = RestClient::Request.execute(:url => url,
