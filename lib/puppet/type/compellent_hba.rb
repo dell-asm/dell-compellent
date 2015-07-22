@@ -16,7 +16,7 @@ Puppet::Type.newtype(:compellent_hba) do
   newparam(:wwn) do
     desc "The WWN. Valid characters are a-z, 1-9 & underscore or can be a blank value."
     validate do |value|
-      unless value =~ /^[\w,]*$/
+      unless value =~ /^[\w,]*$|iqn.*/
         raise ArgumentError, "%s is not a valid wwn number." % value
       end
     end

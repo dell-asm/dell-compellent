@@ -106,7 +106,7 @@ Puppet::Type.type(:compellent_hba).provide(:compellent_hba, :parent => Puppet::P
         end
       else
         for item in str
-          if !(wwn_list.include? item.upcase)
+          if !(wwn_list.include?(item.upcase) || wwn_list.include?(item))
             if self.valid_wwn.length  > 0
               self.valid_wwn =  self.valid_wwn + ",#{item}"
             else
