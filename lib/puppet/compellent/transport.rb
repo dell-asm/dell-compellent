@@ -55,10 +55,15 @@ module Puppet
 
           Puppet.debug("Host IP is #{self.host}")
           login_respxml = "#{CommonLib.get_log_path(1)}/loginResp_#{CommonLib.get_unique_refid}.xml"
-          response = exec("system show -xml #{login_respxml}")
-          hash = response[:xml_output_hash]
-          response_output = response[:xml_output_file]
-          File.delete(login_respxml,response_output)
+          login_exitcodexml = "#{CommonLib.get_log_path(1)}/loginExitCode_#{CommonLib.get_unique_refid}.xml"
+
+          response = command_exec(@lib_path,login_exitcodexml,"\"system show -xml #{login_respxml}\"")
+
+          parser_obj = ResponseParser.new('_')
+          parser_obj.parse_exitcode(login_exitcodexml)
+          hash = parser_obj.return_response
+
+          File.delete(login_respxml,login_exitcodexml)
           if "#{hash['Success']}" == 'TRUE'
             Puppet.debug('Login successful') if !script_run
           else
@@ -66,26 +71,6 @@ module Puppet
           end
         end
 
-      end
-
-
-      def exec(command, *extra_args)
-        ref_id = CommonLib.get_unique_refid
-        resp_xml = "#{@log_path}/response_#{ref_id}.xml"
-        args = ['-jar', @lib_path,
-                '-host', self.host,
-                '-user', self.user,
-                '-password', self.password,
-                '-xmloutputfile', resp_xml,
-                '-c', command] + extra_args
-        # Puppet.debug("Executing compellent command: " + args.join(" "))
-        ret = system('java', *args)
-        parser_obj = ResponseParser.new('_')
-        parser_obj.parse_exitcode(resp_xml)
-        hash = parser_obj.return_response
-        {:system_ret => ret,
-         :xml_output_file => resp_xml,
-         :xml_output_hash => hash, }
       end
 
       # Executes a compellent jar command with Exit Code and Response XMls
