@@ -12,11 +12,8 @@ opts = Trollop::options do
   opt :username, 'equallogic server username', :type => :string, :required => true
   opt :password, 'equallogic server password', :type => :string, :required => true
   opt :timeout, 'command timeout', :default => 240
-  opt :credential_id, 'credential_id'
-  opt :asm_decrypt, 'asm_decrypt'
   opt :scheme, 'connection scheme', :default => 'https'
   opt :community_string, 'community string' #This is a stub and shouldnt be used
-  opt :file, 'write to file'
   opt :discovery_type, 'Discovery type Storage_Center / EM', :default => 'Storage_Center'
 end
 response = ''
@@ -41,7 +38,7 @@ rescue Timeout::Error
 ensure
   equallogic_json = File.join('/opt/Dell/ASM/cache', "#{opts[:server]}.json")
   if File.exists? equallogic_json
-    puts File.read(equallogic_json) if !opts[:file]
+    puts File.read(equallogic_json)
     exit 0
   else
     puts response
