@@ -27,7 +27,7 @@ define compellent::createvol (
   $volume_notes = '',
   $server_notes = '',
   $replayprofile = 'Sample',
-  $storageprofile = 'Low Priority',
+  $storageprofile = '',
   $servername = '',
   $operatingsystem = 'VMWare ESX 5.1',
   $serverfolder = '',
