@@ -13,7 +13,7 @@ opts = Trollop::options do
   opt :server, 'equallogic server address', :type => :string, :required => true
   opt :port, 'equallogic server port', :default => 443
   opt :username, 'equallogic server username', :type => :string, :required => true
-  opt :password, 'equallogic server password', :type => :string, :required => true
+  opt :password, 'equallogic server password', :type => :string, :default => ENV['PASSWORD']
   opt :timeout, 'command timeout', :default => 180
   opt :scheme, 'connection scheme', :default => 'https'
 end
