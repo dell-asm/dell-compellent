@@ -13,7 +13,7 @@ opts = Trollop::options do
   opt :server, 'EM IP Address / Hostname', :type => :string, :required => true
   opt :port, 'EM Port', :default => 3033
   opt :username, 'EM API username', :type => :string, :required => true
-  opt :password, 'EM API password', :type => :string, :required => true
+  opt :password, 'EM API password', :type => :string, :default => ENV['PASSWORD']
   opt :timeout, 'command timeout', :default => 180
   opt :scheme, 'connection scheme', :default => 'https'
   opt :discovery_type, 'Discovery type Storage_Center / EM', :default => 'EM'
