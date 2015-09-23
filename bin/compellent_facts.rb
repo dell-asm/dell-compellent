@@ -3,6 +3,7 @@ require 'trollop'
 require 'json'
 require 'pathname'
 require 'xmlsimple'
+require 'puppet'
 
 puppet_dir = File.join(Pathname.new(__FILE__).parent.parent,'lib','puppet')
 require "#{puppet_dir}/files/CommonLib"
@@ -16,10 +17,32 @@ opts = Trollop::options do
   opt :password, 'equallogic server password', :type => :string, :default => ENV['PASSWORD']
   opt :timeout, 'command timeout', :default => 180
   opt :scheme, 'connection scheme', :default => 'https'
+  opt :output, 'Output facts to file location', :type => :string, :required => true
 end
 
 @file_path = File.join(Pathname.new(__FILE__).parent.parent,'lib','files')
 @seperator = ' '
+
+begin
+  args=['--trace']
+
+  Puppet.settings.initialize_global_settings(args)
+  Puppet.settings.initialize_app_defaults(Puppet::Settings.app_defaults_for_run_mode(Puppet.run_mode))
+  if Puppet.respond_to?(:base_context) && Puppet.respond_to?(:push_context)
+    Puppet.push_context(Puppet.base_context(Puppet.settings))
+  end
+
+  Puppet::Util::Log.newdestination("console")
+  Puppet::Util::Log.level = :debug
+
+  Puppet[:color] = false
+
+  Puppet.debug('Puppet logging set to console')
+rescue
+  puts 'Error setting up console logging'
+  exit 1
+end
+
 
 @transport ||= Puppet::Compellent::Transport.new(opts)
 
@@ -75,16 +98,14 @@ end
 
 begin
   results = retrieve.to_json
-  p results
-  exit 0
+  if results.empty?
+    puts "Unable to get updated facts"
+    exit 1
+  else
+    File.write(opts[:output], results) unless results.empty?
+  end
 rescue Exception => e
   puts e.message
   puts e.backtrace
   exit 1
-ensure
-  results ||= {}
-  compellent_cache = '/opt/Dell/ASM/cache'
-  Dir.mkdir(compellent_cache) unless Dir.exists? compellent_cache
-  file_path = File.join(compellent_cache, "#{opts[:server]}.json")
-  File.write(file_path, results) unless results.empty?
 end

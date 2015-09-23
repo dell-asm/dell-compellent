@@ -15,6 +15,7 @@ opts = Trollop::options do
   opt :scheme, 'connection scheme', :default => 'https'
   opt :community_string, 'community string' #This is a stub and shouldnt be used
   opt :discovery_type, 'Discovery type Storage_Center / EM', :default => 'Storage_Center'
+  opt :output, 'Output facts to file location', :type => :string, :required => true
 end
 response = ''
 opts[:port] == 443 ? discovery_type = 'Storage_Center' : discovery_type = 'EM'
@@ -29,22 +30,15 @@ begin
     # intentionally doing this to let it finish
     folder = Pathname.new(__FILE__).parent
     if discovery_type == 'EM'
-      fact_retrieve_command = "#{folder}/em_facts.rb --server #{opts[:server]} --scheme #{opts[:scheme]} --username '#{opts[:username]}'"
+      fact_retrieve_command = "#{folder}/em_facts.rb --server #{opts[:server]} --scheme #{opts[:scheme]} --username '#{opts[:username]}' --output '#{opts[:output]}'"
     else
-      fact_retrieve_command = "#{folder}/compellent_facts.rb --server #{opts[:server]} --scheme #{opts[:scheme]} --username '#{opts[:username]}'"
+      fact_retrieve_command = "#{folder}/compellent_facts.rb --server #{opts[:server]} --scheme #{opts[:scheme]} --username '#{opts[:username]}' --output '#{opts[:output]}'"
     end
     fact_retrieve_command << " --password '#{opts[:password]}'" if opts[:password]
     response = `#{fact_retrieve_command}`
   end
+  puts response
 rescue Timeout::Error
+  puts "Timed out getting new facts"
   exit 1
-ensure
-  equallogic_json = File.join('/opt/Dell/ASM/cache', "#{opts[:server]}.json")
-  if File.exists? equallogic_json
-    puts File.read(equallogic_json)
-    exit 0
-  else
-    puts response
-    exit 1
-  end
 end
