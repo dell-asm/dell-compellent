@@ -26,13 +26,13 @@ As Puppet agent cannot be directly installed on the Compellent storage controlle
  * Puppet 2.7.+
  * Compellent JAVA SDK
 
-The Compellent JAVA libraries (CompCU-6.3.jar) can be downloaded directly from the Dell support site. (http://support.dell.com).
+The Compellent JAVA libraries (CompCU-6.7.jar) can be downloaded directly from the Dell support site. (http://support.dell.com).
 
 Note: A Dell Compellent support account is required to be able to download the SDK.
 
 After downloading the SDK, the following files need to be copied to the Puppet Master: 
 
-`CompCU-6.3.jar > [module dir]/compellent/lib/puppet/files/`
+`CompCU-6.7.jar > [module dir]/compellent/lib/puppet/files/`
 
 
 ### Device Setup
