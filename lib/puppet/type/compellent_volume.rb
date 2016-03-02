@@ -1,3 +1,4 @@
+# encoding: utf-8
 Puppet::Type.newtype(:compellent_volume) do
   @doc = "Manage Compellent Volume creation, modification and deletion."
 
@@ -7,7 +8,7 @@ Puppet::Type.newtype(:compellent_volume) do
     desc "The volume name. Valid characters are a-z, 1-9 & underscore."
     isnamevar
     validate do |value|
-      unless value =~ /^[\w\s\-]+$/
+      unless value =~ /^[\d{Word}\s\-]+$/u
         raise ArgumentError, "%s is not a valid initial volume name." % value
       end
     end

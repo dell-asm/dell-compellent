@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'puppet/provider/compellent'
 require 'puppet/files/ResponseParser'
 require 'puppet/files/CommonLib'
