@@ -1,3 +1,4 @@
+# encoding: utf-8
 # Class for making connection with device
 
 require 'puppet/provider'

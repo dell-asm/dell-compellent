@@ -1,3 +1,4 @@
+# encoding: utf-8
 Puppet::Type.newtype(:compellent_server) do
   @doc = "Manage Compellent Server creation and deletion."
 
@@ -7,7 +8,7 @@ Puppet::Type.newtype(:compellent_server) do
     desc "The server name. Valid characters are a-z, 1-9 & underscore."
     isnamevar
     validate do |value|
-      unless value =~ /^[\w\s\-]+$/
+      unless value =~ /^[\p{Word}\s\-]+$/u
         raise ArgumentError, "%s is not a valid initial server name." % value
       end
     end
@@ -24,7 +25,7 @@ Puppet::Type.newtype(:compellent_server) do
   newparam(:serverfolder) do
     desc "The server folder name."
     validate do |value|
-      unless value =~ /^[\w\s\-]*$/
+      unless value =~ /^[\p{Word}\s\-]*$/u
         raise ArgumentError, "%s is not a valid initial server folder name." % value
       end
     end

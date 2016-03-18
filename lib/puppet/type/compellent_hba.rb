@@ -1,3 +1,4 @@
+# encoding: utf-8
 Puppet::Type.newtype(:compellent_hba) do
   @doc = "Manage Server HBA creation, modification and deletion."
 
@@ -7,7 +8,7 @@ Puppet::Type.newtype(:compellent_hba) do
     desc "The server name. Valid characters are a-z, 1-9 & underscore."
     isnamevar
     validate do |value|
-      unless value =~ /^[\w\s\-]+$/
+      unless value =~ /^[\p{Word}\s\-]+$/u
         raise ArgumentError, "%s is not a valid initial volume name." % value
       end
     end
@@ -16,7 +17,7 @@ Puppet::Type.newtype(:compellent_hba) do
   newparam(:wwn) do
     desc "The WWN. Valid characters are a-z, 1-9 & underscore or can be a blank value."
     validate do |value|
-      unless value =~ /^[\w,]*$|iqn.*/
+      unless value =~ /^[\p{Word},]*$|iqn.*/u
         raise ArgumentError, "%s is not a valid wwn number." % value
       end
     end
@@ -24,7 +25,7 @@ Puppet::Type.newtype(:compellent_hba) do
   newparam(:serverfolder) do
     desc "The server folder name, optional parameter"
     validate do |value|
-      unless value =~ /^[\w\s\-]*$/
+      unless value =~ /^[\p{Word}\s\-]*$/u
         raise ArgumentError, "%s is not a valid initial server folder name." % value
       end
     end

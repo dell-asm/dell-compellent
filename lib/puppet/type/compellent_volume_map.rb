@@ -1,3 +1,4 @@
+# encoding: utf-8
 Puppet::Type.newtype(:compellent_volume_map) do
   @doc = 'Manage Map/Unamp Volume.'
 
@@ -7,7 +8,7 @@ Puppet::Type.newtype(:compellent_volume_map) do
     desc 'The volume name needs to be map with server. Valid characters are a-z, 1-9 & underscore.'
     isnamevar
     validate do |value|
-      unless value =~ /^[\w\s\-]+$/
+      unless value =~ /^[\p{Word}\s\-]+$/u
         raise ArgumentError, "%s is not a valid initial volume name." % value
       end
     end
@@ -23,7 +24,7 @@ Puppet::Type.newtype(:compellent_volume_map) do
   newparam(:volumefolder) do
     desc 'The volume folder name, optional parameter.'
     validate do |value|
-      unless value =~ /^[\w\s\-]*$/
+      unless value =~ /^[\p{Word}\s\-]*$/u
         raise ArgumentError, "%s is not a valid initial volume folder name." % value
       end
     end
@@ -32,7 +33,7 @@ Puppet::Type.newtype(:compellent_volume_map) do
   newparam(:serverfolder) do
     desc 'The server folder name, optional parameter.'
     validate do |value|
-      unless value =~ /^[\w\s\-]*$/
+      unless value =~ /^[\p{Word}\s\-]*$/u
         raise ArgumentError, "%s is not a valid initial server folder name." % value
       end
     end
@@ -62,7 +63,7 @@ Puppet::Type.newtype(:compellent_volume_map) do
   newparam(:servername) do
     desc 'The parameter specifies the server to which to map the volume.'
     validate do |value|
-      unless value =~ /^[\w\s\-]+$/
+      unless value =~ /^[\p{Word}\s\-]+$/u
         raise ArgumentError, "%s is not a valid initial server name." % value
       end
     end
