@@ -8,7 +8,7 @@ Puppet::Type.newtype(:compellent_volume) do
     desc "The volume name. Valid characters are a-z, 1-9 & underscore."
     isnamevar
     validate do |value|
-      unless value =~ /^[\d{Word}\s\-]+$/u
+      unless value =~ /^[\p{Word}\s\-]+$/u
         raise ArgumentError, "%s is not a valid initial volume name." % value
       end
     end
