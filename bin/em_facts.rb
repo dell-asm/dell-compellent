@@ -62,8 +62,8 @@ def retrieve
   facts['storage_center_info'] = JSON.pretty_generate(storage_center_fact[1])
 
   # iSCSI Interface information
-  facts['storage_center_iscsi_fact'] = JSON.pretty_generate(get_storage_center_iscsi_facts(storage_center_fact[0]))
-  facts['iscsi_fault_domain_fact'] = JSON.pretty_generate(get_iscsi_fault_domain_facts(storage_center_fact))
+  facts['storage_center_iscsi_fact'] = JSON.pretty_generate(get_storage_center_iscsi_facts(storage_center_fact[0], facts))
+  facts['iscsi_fault_domain_fact'] = JSON.pretty_generate(get_iscsi_fault_domain_facts(storage_center_fact, facts))
   facts
 end
 
@@ -84,7 +84,7 @@ def get_storage_center_facts
   [storage_centers,storage_centers_info]
 end
 
-def get_iscsi_fault_domain_facts(storage_center_facts)
+def get_iscsi_fault_domain_facts(storage_center_facts, facts)
   iscsi_fault_domain_info = {}
   storage_centers = storage_center_facts[0]
   iscsi_fault_domain_url = @transport.get_url("StorageCenter/ScIscsiFaultDomain/GetList")
@@ -93,23 +93,34 @@ def get_iscsi_fault_domain_facts(storage_center_facts)
     instance_id = storage_center_info['instanceId']
 
     iscsi_fault_domain_info[storage_center] = @transport.post_request(iscsi_fault_domain_url,
-                                                                      iscsi_filter(storage_center),
+                                                                      iscsi_filter(storage_center, facts),
                                                                       'post')
   end
   iscsi_fault_domain_info
 end
 
-def get_storage_center_iscsi_facts(storage_centers)
+def get_storage_center_iscsi_facts(storage_centers, facts)
   iscsi_port_facts = {}
   url = @transport.get_url('StorageCenter/ScControllerPortIscsiConfiguration/GetList')
   (storage_centers || []).each do |sc|
-    iscsi_port_info = @transport.post_request(url,iscsi_filter(sc),'post')
+    iscsi_port_info = @transport.post_request(url,iscsi_filter(sc, facts),'post')
     iscsi_port_facts[sc] = iscsi_port_info
   end
   iscsi_port_facts
 end
 
-def iscsi_filter(storage_center)
+def iscsi_filter(storage_center, facts)
+  em_version = facts["version"].split(".")
+  release_version = em_version[0].to_i
+  release_id = em_version[1].to_i
+  if release_version <= 15 && release_id == 1
+    iscsi_filter_r1(storage_center)
+  else
+    iscsi_filter_r3(storage_center)
+  end
+end
+
+def iscsi_filter_r1(storage_center)
   {
       "filterType" => "AND",
       "filters" => [
@@ -119,6 +130,21 @@ def iscsi_filter(storage_center)
               "filterType" => "Equals"
           }
       ]
+  }.to_json
+end
+
+def iscsi_filter_r3(storage_center)
+  { "Filter" =>
+      {
+        "filterType" => "AND",
+        "filters" => [
+          {
+            "attributeName" => "scSerialNumber",
+            "attributeValue" => storage_center,
+            "filterType" => "Equals"
+          }
+        ]
+      }
   }.to_json
 end
 
