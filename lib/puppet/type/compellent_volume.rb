@@ -36,6 +36,18 @@ Puppet::Type.newtype(:compellent_volume) do
   
   end
 
+  newparam(:readcache, :boolean => true) do
+    desc "Enable readcache."
+    newvalues(:true, :false)
+    defaultto :true
+  end
+
+  newparam(:writecache, :boolean => true) do
+    desc "Enable writecache."
+    newvalues(:true, :false)
+    defaultto :true
+  end
+    
   newparam(:boot, :boolean => true) do
     desc "The parameter specifies the boot option for volume."
     newvalues(:true, :false)

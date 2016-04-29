@@ -7,10 +7,18 @@ Puppet::Type.type(:compellent_volume).provide(:compellent_volume, :parent => Pup
   @doc = 'Manage Compellent Volume creation, modification and deletion.'
   def createvolume_commandline
     command = "volume create -name '#{@resource[:name]}' -size '#{@resource[:size]}'"
-    if #@{resource[:boot]} = "enable"
-    command = command + " -boot"
+    if @resource[:boot] == :true
+      command = command + " -boot"
     end
 
+    if @resource[:readcache] == :true
+      command = command + " -readcache true"
+    end
+
+    if @resource[:writecache] == :true
+      command = command + " -writecache true"
+    end
+    
     folder_value = @resource[:volumefolder]
     if "#{folder_value}".size != 0
       command = command + " -folder '#{folder_value}'"
