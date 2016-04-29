@@ -9,6 +9,8 @@ define compellent::volume (
   $boot           = false,
   $volumefolder   = '',
   $notes          = '',
+  $readcache = true,
+  $writecache = true,
   $replayprofile  = 'Sample',
   $storageprofile = 'Low Priority',) {
   compellent_volume { "$name":
@@ -17,6 +19,8 @@ define compellent::volume (
     boot           => $boot,
     volumefolder   => $volumefolder,
     notes          => $notes,
+    readcache => $readcache,
+    writecache => $writecache,
     replayprofile  => $replayprofile,
     storageprofile => $storageprofile,
     purge          => $purge,
