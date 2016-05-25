@@ -18,6 +18,7 @@ opts = Trollop::options do
   opt :timeout, 'command timeout', :default => 180
   opt :scheme, 'connection scheme', :default => 'https'
   opt :output, 'Output facts to file location', :type => :string, :required => true
+  opt :credential_id, 'dummy value for ASM, not used'
 end
 
 @file_path = File.join(Pathname.new(__FILE__).parent.parent,'lib','files')

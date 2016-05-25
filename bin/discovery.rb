@@ -16,6 +16,7 @@ opts = Trollop::options do
   opt :community_string, 'community string' #This is a stub and shouldnt be used
   opt :discovery_type, 'Discovery type Storage_Center / EM', :default => 'Storage_Center'
   opt :output, 'Output facts to file location', :type => :string, :required => true
+  opt :credential_id, 'dummy value for ASM, not used'
 end
 response = ''
 opts[:port] == 443 ? discovery_type = 'Storage_Center' : discovery_type = 'EM'
