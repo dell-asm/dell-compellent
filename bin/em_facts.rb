@@ -19,6 +19,7 @@ opts = Trollop::options do
   opt :scheme, 'connection scheme', :default => 'https'
   opt :discovery_type, 'Discovery type Storage_Center / EM', :default => 'EM'
   opt :output, 'Output facts to file location', :type => :string, :required => true
+  opt :credential_id, 'dummy value for ASM, not used'
 end
 
 @file_path = File.join(Pathname.new(__FILE__).parent.parent,'lib','files')
