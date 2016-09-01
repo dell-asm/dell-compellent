@@ -73,6 +73,14 @@ module Puppet
 
       end
 
+      def get_java_path
+        if ENV["JAVA_HOME"]
+          File.join(ENV["JAVA_HOME"], "/bin/java")
+        else
+          "/opt/puppet/bin/java"
+        end
+      end
+
       # Executes a compellent jar command with Exit Code and Response XMls
       def command_exec(libPath,respXml,command)
         #ref_id = CommonLib.get_unique_refid
@@ -84,13 +92,13 @@ module Puppet
                 '-xmloutputfile', respXml,
                 '-c', command]
         #   Puppet.debug("Executing compellent command: " + args.join(" "))
-        ret = `/opt/puppet/bin/java #{args.join(' ')} 2>&1`
+        ret = `#{get_java_path} #{args.join(' ')} 2>&1`
         Puppet.debug("Output: #{ret}")
         # Need to retry if there is any connection reset message
         if ret.match(/Connection reset|Couldn't connect to/i)
           Puppet.debug('Connection reset observed. sleep for 10 seconds and retry')
           sleep(10)
-          `/opt/puppet/bin/java #{args.join(' ')} 2>&1`
+          `#{get_java_path} #{args.join(' ')} 2>&1`
         else
           ret
         end
