@@ -77,7 +77,7 @@ module Puppet
         if ENV["JAVA_HOME"]
           File.join(ENV["JAVA_HOME"], "/bin/java")
         else
-          "/opt/puppet/bin/java"
+          "/opt/java/bin/java"
         end
       end
 
