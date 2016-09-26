@@ -85,20 +85,19 @@ module Puppet
       def command_exec(libPath,respXml,command)
         #ref_id = CommonLib.get_unique_refid
         #resp_xml = "#{@log_path}/response_#{ref_id}.xml"
-        args = ['-jar', libPath,
-                '-host', self.host,
+        args = ['-host', self.host,
                 '-user', self.user,
                 '-password', self.password,
                 '-xmloutputfile', respXml,
                 '-c', command]
         #   Puppet.debug("Executing compellent command: " + args.join(" "))
-        ret = `#{get_java_path} #{args.join(' ')} 2>&1`
+        ret = `sh #{libPath} #{args.join(' ')} 2>&1`
         Puppet.debug("Output: #{ret}")
         # Need to retry if there is any connection reset message
         if ret.match(/Connection reset|Couldn't connect to/i)
           Puppet.debug('Connection reset observed. sleep for 10 seconds and retry')
           sleep(10)
-          `#{get_java_path} #{args.join(' ')} 2>&1`
+          `sh #{libPath} #{args.join(' ')} 2>&1`
         else
           ret
         end
