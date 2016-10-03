@@ -61,6 +61,8 @@ def retrieve
   storage_center_fact = get_storage_center_facts
   facts['storage_centers'] = JSON.pretty_generate(storage_center_fact[0])
   facts['storage_center_info'] = JSON.pretty_generate(storage_center_fact[1])
+  # storages centers connection state
+  facts['storage_center_state'] = JSON.pretty_generate(storage_center_fact[2])
 
   # iSCSI Interface information
   facts['storage_center_iscsi_fact'] = JSON.pretty_generate(get_storage_center_iscsi_facts(storage_center_fact[0], facts))
@@ -71,18 +73,25 @@ end
 def get_storage_center_facts
   # Storage Center information
   storage_centers = []
+  storage_center_state = {}
   storage_center_info = {}
   storage_centers_url = @transport.get_url('StorageCenter/ScConfiguration/GetList')
   storage_centers_info = @transport.post_request(storage_centers_url,'{}','post')
   if storage_centers_info
     storage_centers_info.each do |sc|
-      sc_instance_url = @transport.get_url("StorageCenter/ScController/#{sc['instanceId']}")
-      storage_center_instance_info = @transport.post_request(sc_instance_url,'{}','get')
-      storage_centers.push(sc['scSerialNumber'])
-      storage_center_info[sc['scSerialNumber']] = storage_center_instance_info
+      begin
+        sc_instance_url = @transport.get_url("StorageCenter/ScController/#{sc['instanceId']}")
+        storage_center_instance_info = @transport.post_request(sc_instance_url,'{}','get')
+        storage_centers.push(sc['scSerialNumber'])
+        storage_center_info[sc['scSerialNumber']] = storage_center_instance_info
+        storage_center_state[sc['instanceId']] = {"state" => "connected"}
+      rescue
+        storage_center_state[sc['instanceId']] = {"state" => "disconnected"}
+        STDERR.puts("Failed to fetch details for %s: %s: %s" % [sc["instanceId"], $!.class, $!.to_s])
+      end
     end
   end
-  [storage_centers,storage_centers_info]
+  [storage_centers, storage_centers_info, storage_center_state]
 end
 
 def get_iscsi_fault_domain_facts(storage_center_facts, facts)
@@ -162,4 +171,3 @@ rescue Exception => e
   puts e.backtrace
   exit 1
 end
-
