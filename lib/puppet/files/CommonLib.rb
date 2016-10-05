@@ -34,7 +34,7 @@ class CommonLib
       temp_path = path.dirname
       $i +=1
     end
-    temp_path = temp_path.join('files/CompCU-6.7.jar')
+    temp_path = temp_path.join('files/CompCU.jar')
     Puppet.debug("Path #{temp_path}")
     return  temp_path
   end
