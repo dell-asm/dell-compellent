@@ -43,7 +43,6 @@ module Puppet
           raise ArgumentError, 'no password specified' unless self.password
 
           if self.jsessionid = get_jsession_id(em_login)
-            self.api_version = JSON.parse(em_login)["apiVersion"]
             Puppet.debug('Connection successful with EM') if !script_run
           else
             raise Puppet::Error, "Failed to get JSESSION ID from EM" if !script_run
