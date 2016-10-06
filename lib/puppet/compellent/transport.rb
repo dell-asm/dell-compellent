@@ -11,7 +11,7 @@ require 'puppet'
 module Puppet
   module Compellent
     class Transport
-      attr_accessor :host, :port, :user, :password, :discovery_type, :jsessionid
+      attr_accessor :host, :port, :user, :password, :discovery_type, :jsessionid, :api_version
       def initialize(connection_info=nil)
         @lib_path = CommonLib.get_path(1).to_s
         @log_path  = CommonLib.get_log_path(1).to_s
@@ -42,7 +42,7 @@ module Puppet
           raise ArgumentError, 'no user specified' unless self.user
           raise ArgumentError, 'no password specified' unless self.password
 
-          if self.jsessionid = get_jsession_id
+          if self.jsessionid = get_jsession_id(em_login)
             Puppet.debug('Connection successful with EM') if !script_run
           else
             raise Puppet::Error, "Failed to get JSESSION ID from EM" if !script_run
@@ -104,7 +104,35 @@ module Puppet
         end
       end
 
-      def get_jsession_id
+
+      # Execute Storage Manager Login Endpoint and return response that contains cookie and other version information
+      #
+      # @return [Object] HTTP Response
+      #
+      # @example return
+      #   {"hostName"=>"172.17.0.53",
+      #   "provider"=>"EnterpriseManager",
+      #    "locale"=>"en_US",
+      #    "source"=>"REST",
+      #    "userName"=>"SushilR@aidev.com",
+      #    "connected"=>true,
+      #    "userId"=>434228,
+      #    "application"=>"",
+      #    "providerVersion"=>"16.2.1.228",
+      #    "webServicesPort"=>3033,
+      #    "sessionKey"=>1475261164332,
+      #    "applicationVersion"=>"",
+      #    "apiBuild"=>651,
+      #    "apiVersion"=>"3.1",
+      #    "commandLine"=>false,
+      #    "minApiVersion"=>"0.1",
+      #    "connectionKey"=>"",
+      #    "secureString"=>"",
+      #    "useHttps"=>false,
+      #    "objectType"=>"ApiConnection",
+      #    "instanceId"=>"0",
+      #    "instanceName"=>"ApiConnection"}
+      def em_login
         login_base_url="https://#{CGI.escape(self.user)}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
         url = "#{login_base_url}/ApiConnection/Login"
 
@@ -116,7 +144,21 @@ module Puppet
                                                             :accept => :json ,
                                                             'x-dell-api-version'=> '2.0' })
 
-        response.raw_headers["set-cookie"]
+        response
+      end
+
+      def get_jsession_id(login_info)
+        set_cookie = login_info.raw_headers["set-cookie"]
+        self.api_version = JSON.parse(em_login)["apiVersion"]
+
+        # With EM version 3.1 format of JSession Id has changed. Now we are getting
+        # ["JSESSIONID=yFZVpegI_iaClWgUqmDosTS1.aidev-smdc; path=/api"]
+        # We just need to pass JSESSIONID=yFZVpegI_iaClWgUqmDosTS1.aidev-smdc
+        if self.api_version.to_f >= 3.1
+          set_cookie[0].scan(/(JSESSIONID=.*);/).flatten.first
+        else
+          set_cookie
+        end
       end
 
       def get_url(end_point)
@@ -137,7 +179,7 @@ module Puppet
         {
             :content_type => :json,
             :accept => :json,
-            'x-dell-api-version'=> '2.0',
+            'x-dell-api-version'=> self.api_version,
             'Cookie' => self.jsessionid
         }
       end
