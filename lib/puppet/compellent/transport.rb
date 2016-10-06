@@ -42,8 +42,8 @@ module Puppet
           raise ArgumentError, 'no user specified' unless self.user
           raise ArgumentError, 'no password specified' unless self.password
 
-          if self.jsessionid = get_jsession_id(em_login_info)
-            self.api_version = JSON.parse(em_login_info)["apiVersion"]
+          if self.jsessionid = get_jsession_id(em_login)
+            self.api_version = JSON.parse(em_login)["apiVersion"]
             Puppet.debug('Connection successful with EM') if !script_run
           else
             raise Puppet::Error, "Failed to get JSESSION ID from EM" if !script_run
@@ -105,7 +105,35 @@ module Puppet
         end
       end
 
-      def em_login_info
+
+      # Execute Storage Manager Login Endpoint and return response that contains cookie and other version information
+      #
+      # @return [Object] HTTP Response
+      #
+      # @example return
+      #   {"hostName"=>"172.17.0.53",
+      #   "provider"=>"EnterpriseManager",
+      #    "locale"=>"en_US",
+      #    "source"=>"REST",
+      #    "userName"=>"SushilR@aidev.com",
+      #    "connected"=>true,
+      #    "userId"=>434228,
+      #    "application"=>"",
+      #    "providerVersion"=>"16.2.1.228",
+      #    "webServicesPort"=>3033,
+      #    "sessionKey"=>1475261164332,
+      #    "applicationVersion"=>"",
+      #    "apiBuild"=>651,
+      #    "apiVersion"=>"3.1",
+      #    "commandLine"=>false,
+      #    "minApiVersion"=>"0.1",
+      #    "connectionKey"=>"",
+      #    "secureString"=>"",
+      #    "useHttps"=>false,
+      #    "objectType"=>"ApiConnection",
+      #    "instanceId"=>"0",
+      #    "instanceName"=>"ApiConnection"}
+      def em_login
         login_base_url="https://#{CGI.escape(self.user)}:#{CGI.escape(self.password)}@#{self.host}:#{self.port}/api/rest"
         url = "#{login_base_url}/ApiConnection/Login"
 
@@ -122,12 +150,12 @@ module Puppet
 
       def get_jsession_id(login_info)
         set_cookie = login_info.raw_headers["set-cookie"]
-        api_version = JSON.parse(login_info)["apiVersion"]
+        self.api_version = JSON.parse(em_login)["apiVersion"]
 
         # With EM version 3.1 format of JSession Id has changed. Now we are getting
         # ["JSESSIONID=yFZVpegI_iaClWgUqmDosTS1.aidev-smdc; path=/api"]
         # We just need to pass JSESSIONID=yFZVpegI_iaClWgUqmDosTS1.aidev-smdc
-        if api_version.to_f >= 3.1
+        if self.api_version.to_f >= 3.1
           set_cookie[0].scan(/(JSESSIONID=.*);/).flatten.first
         else
           set_cookie
