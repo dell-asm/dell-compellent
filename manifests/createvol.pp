@@ -41,7 +41,16 @@ define compellent::createvol (
   $singlepath = false,
   $lun = '',
   $localport = '',
+  $server_cluster_name = undef
 ) {
+  if $server_cluster_name != undef {
+    compellent_cluster_server {"$server_cluster_name":
+      ensure => "present",
+      folder => $serverfolder,
+      operatingsystem => $operatingsystem,
+    }
+  }
+
   compellent_volume {"$name":
     size => "$size",
     boot => "$boot",
@@ -80,19 +89,44 @@ define compellent::createvol (
         }
       }
 
-      compellent_volume_map { "$name":
-        boot => "$boot",
-        volumefolder => "$volumefolder",
-        serverfolder => "$serverfolder",
-        force => "$force",
-        readonly => "$readonly",
-        singlepath => "$singlepath",
-        servername => "$servername",
-        lun => "$lun",
-        localport => "$localport",
-        ensure => 'present',
-        require =>  Compellent_server["$servername"],
+      if $server_cluster_name == undef {
+        compellent_volume_map { "$name":
+          boot => "$boot",
+          volumefolder => "$volumefolder",
+          serverfolder => "$serverfolder",
+          force => "$force",
+          readonly => "$readonly",
+          singlepath => "$singlepath",
+          servername => "$servername",
+          lun => "$lun",
+          localport => "$localport",
+          ensure => 'present',
+          require =>  Compellent_server["$servername"],
+        }
       }
+    }
+  }
+
+  if $server_cluster_name != undef and empty($servername) != true {
+    compellent_cluster_server_map {"$server_cluster_name":
+      ensure => "present",
+      folder => "$serverfolder",
+      cluster_server_name => "$server_cluster_name",
+      server_name => "$servername"
+    }
+
+    compellent_volume_map { "$name":
+      boot => "$boot",
+      volumefolder => "$volumefolder",
+      serverfolder => "$serverfolder",
+      force => "$force",
+      readonly => "$readonly",
+      singlepath => "$singlepath",
+      servername => "$server_cluster_name",
+      lun => "$lun",
+      localport => "$localport",
+      ensure => 'present',
+      require =>  Compellent_cluster_server_map["$server_cluster_name"],
     }
   }
 }
