@@ -62,16 +62,16 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
     File.delete(cluster_create_exit_code_xml)
 
     if response["Success"] == "TRUE"
-      Puppet.info("Successfully created the cluster server %s" % [cluster_server_name])
+      Puppet.info("Successfully created the cluster server '%s'" % [cluster_server_name])
     else
-      Puppet.info("Unable to create the cluster server %s." % [cluster_server_name])
+      Puppet.info("Unable to create the cluster server '%s'" % [cluster_server_name])
       raise Puppet::Error, response["Error"]
     end
   end
 
   def destroy
     server_name = @resource[:name]
-    Puppet.debug("Destroying server %s" % [server_name])
+    Puppet.debug("Destroying cluster server '%s'" % [server_name])
 
     libpath = CommonLib.get_path(1)
     server_destroy_exit_code_xml = "#{CommonLib.get_log_path(1)}/serverDestroyExitCode_#{CommonLib.get_unique_refid}.xml"
@@ -85,6 +85,7 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
 
     response = parser_obj.return_response
     File.delete(server_destroy_exit_code_xml)
+
     if response["Success"] == "TRUE"
       Puppet.info("Successfully deleted the cluster server '%s'." % [server_name])
     else
@@ -110,7 +111,7 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
       parser_obj.parse_discovery(server_show_exit_code_xml, server_show_response_xml, 0)
       self.server_information = parser_obj.return_response
       Puppet.debug("Server folder is not null, server_information : %s" % [self.server_information])
-      server_index = self.server_information['server_Index']
+      server_index = self.server_information["server_Index"]
     else
       self.server_information = parser_obj.retrieve_empty_folder_server_properties(server_show_response_xml, cluster_server_name)
       Puppet.debug("Server folder is null, server_information : %s" % [self.server_information])
@@ -121,7 +122,8 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
 
     Puppet.debug("Value of property ensure '%s'" % [@property_hash[:ensure]])
     File.delete(server_show_exit_code_xml, server_show_response_xml)
-    if  server_index.empty?
+
+    if server_index.empty?
       Puppet.info("Puppet::Server %s does not exist" % [cluster_server_name])
       false
     else
