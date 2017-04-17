@@ -33,7 +33,7 @@ define compellent::removevol (
   $readonly = false,
   $singlepath = false,
   $lun = '',
-  $localport = '',
+  $localport = ''
 ) {
   compellent_volume {"$name":
     ensure         => 'absent',
