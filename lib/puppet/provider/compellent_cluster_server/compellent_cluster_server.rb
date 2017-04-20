@@ -1,4 +1,6 @@
 # encoding: utf-8
+require "xmlsimple"
+
 require "puppet/provider/compellent"
 require "puppet/files/ResponseParser"
 require "puppet/files/CommonLib"
@@ -20,8 +22,16 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
     command
   end
 
-  def show_server_commandline
-    command = "server show -name '#{@resource[:name]}'"
+  # Command line for getting all or specific server information
+  #
+  # @param server_name [String] name of server, or cluster server
+  # @return [String]
+  def show_server_commandline(server_name=nil)
+    command = "server show"
+
+    if server_name
+      command.concat(" -name '%s'" % [server_name])
+    end
     command.concat(" -folder '%s'" % [@resource[:folder]]) unless @resource[:folder].strip.empty?
 
     command
@@ -96,8 +106,9 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
 
   def exists?
     cluster_server_name = @resource[:name]
+
     libpath = CommonLib.get_path(1)
-    server_show_cli = show_server_commandline
+    server_show_cli = show_server_commandline(cluster_server_name)
 
     server_show_exit_code_xml = "#{CommonLib.get_log_path(1)}/serverShowExitCode_#{CommonLib.get_unique_refid}.xml"
     server_show_response_xml = "#{CommonLib.get_log_path(1)}/serverShowResponse_#{CommonLib.get_unique_refid}.xml"
@@ -107,7 +118,7 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
     folder_value = @resource[:folder]
     server_index = ""
 
-    if folder_value.length  > 0
+    if folder_value.length > 0
       parser_obj.parse_discovery(server_show_exit_code_xml, server_show_response_xml, 0)
       self.server_information = parser_obj.return_response
       Puppet.debug("Server folder is not null, server_information : %s" % [self.server_information])
@@ -120,16 +131,46 @@ Puppet::Type.type(:compellent_cluster_server).provide(:compellent_cluster_server
       end
     end
 
-    Puppet.debug("Value of property ensure '%s'" % [@property_hash[:ensure]])
+    Puppet.debug("Value of property ensure '%s'" % [@resource[:ensure]])
     File.delete(server_show_exit_code_xml, server_show_response_xml)
 
     if server_index.empty?
-      Puppet.info("Puppet::Server %s does not exist" % [cluster_server_name])
+      Puppet.info("Server Cluster %s does not exist" % [cluster_server_name])
       false
     else
-      Puppet.info("Puppet::Server %s exist" % [cluster_server_name])
-      true
+      Puppet.info("Server Cluster %s exist with index %s" % [cluster_server_name, server_index.to_s])
+      if @resource[:ensure] == :absent
+        # For removal, we want to indicate true existence only if there is no associated mappings for the server cluster
+        server_cluster_mappings_empty?(server_index)
+      else
+        true
+      end
     end
+  end
+
+  # Checks if there are any associated mappings for given server cluster
+  #
+  # @param cluster_server_index [String] index of server cluster object in compellent servers
+  # @return [Boolean]
+  def server_cluster_mappings_empty?(cluster_server_index)
+    Puppet.debug("Getting Server Cluster Mappings for Index: %s" % cluster_server_index)
+    # Get all servers and see if any of them is mapped to our server cluster
+    libpath = CommonLib.get_path(1)
+
+    exit_code_xml = "#{CommonLib.get_log_path(1)}/serverShowShowExitCode_#{CommonLib.get_unique_refid}.xml"
+    show_response_xml = "#{CommonLib.get_log_path(1)}/serverShowShowResponse_#{CommonLib.get_unique_refid}.xml"
+
+    connection.command_exec("#{libpath}","#{exit_code_xml}","\"#{show_server_commandline} -xml #{show_response_xml}\"")
+    server_data = JSON.parse(JSON.pretty_generate(XmlSimple.xml_in(show_response_xml)))
+    File.delete(exit_code_xml, show_response_xml)
+
+    mapped_servers = server_data["server"].select do |server|
+      folder_name = server["Folder"].first.is_a?(Hash) ? "" : server["Folder"].first
+      server["ParentIndex"].first == cluster_server_index && folder_name.downcase == @resource[:folder].downcase
+    end
+    Puppet.debug("Found %d mapped servers for Server Cluster Index: %s" % [mapped_servers.length, cluster_server_index])
+
+    mapped_servers.empty?
   end
 end
 
