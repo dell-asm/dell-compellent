@@ -42,7 +42,7 @@ group(:development, :test) do
 end
 
 group(:extra) do
-  gem "rack", "~> 1.4", :require => false
+  gem "rack", "~> 2.1", :require => false
   gem "activerecord", '~> 3.0.7', :require => false
   gem "couchrest", '~> 1.0', :require => false
   gem "net-ssh", '~> 2.1', :require => false
