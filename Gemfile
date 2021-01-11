@@ -16,7 +16,7 @@ end
 platforms :ruby do
   gem 'pry', :group => :development
   gem 'yard', :group => :development
-  gem 'redcarpet', '~> 2.0', :group => :development
+  gem 'redcarpet', '~> 3.5', :group => :development
   gem "racc", "1.4.9", :group => :development
 end
 
