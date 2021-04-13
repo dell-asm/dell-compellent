@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem 'puppet', '3.3.2'
+gem 'puppet', '3.8.7'
 
 def location_for(place, fake_version = nil)
   if place =~ /^(git:[^#]*)#(.*)/
